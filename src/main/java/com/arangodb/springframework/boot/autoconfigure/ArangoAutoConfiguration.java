@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDBException;
 import com.arangodb.springframework.config.ArangoConfiguration;
 import com.arangodb.springframework.core.ArangoOperations;
 
@@ -52,7 +53,29 @@ public class ArangoAutoConfiguration implements ArangoConfiguration {
 
 	@Override
 	public ArangoDB.Builder arango() {
-		return new ArangoDB.Builder();
+		final ArangoDB.Builder builder = new ArangoDB.Builder()
+				.user(properties.getUser())
+				.password(properties.getPassword())
+				.timeout(properties.getTimeout())
+				.useSsl(properties.getUseSsl())
+				.maxConnections(properties.getMaxConnections())
+				.connectionTtl(properties.getConnectionTtl())
+				.acquireHostList(properties.getAcquireHostList())
+				.loadBalancingStrategy(properties.getLoadBalancingStrategy())
+				.useProtocol(properties.getProtocol());
+		properties.getHosts().stream().map(this::parseHost)
+				.forEach(host -> builder.host(host[0], Integer.valueOf(host[1])));
+		return builder;
+	}
+
+	private String[] parseHost(final String host) {
+		final String[] split = host.split(":");
+		if (split.length != 2 || !split[1].matches("[0-9]+")) {
+			throw new ArangoDBException(String.format(
+					"Could not load host '%s' from property-value spring.data.arangodb.hosts. Expected format ip:port,ip:port,...",
+					host));
+		}
+		return split;
 	}
 
 	@Override
