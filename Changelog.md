@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+### Added
+
+- added `spring-boot-configuration-processor`
+- added JavaDoc in `ArangoProperties`
+
 ## [1.0.0] - 2018-11-09
 
 * initial release

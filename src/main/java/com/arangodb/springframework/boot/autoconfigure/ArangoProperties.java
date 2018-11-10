@@ -32,40 +32,70 @@ import com.arangodb.internal.ArangoDefaults;
  * @author Mark Vollmary
  *
  */
-/**
- * @author Mark Vollmary
- *
- */
-/**
- * @author Mark Vollmary
- *
- */
 @ConfigurationProperties(prefix = "spring.data.arangodb")
 public class ArangoProperties {
 
-	private String database;
-	private Collection<String> hosts;
-	private String user;
-	private String password;
-	private Integer timeout;
-	private Boolean useSsl;
-	private Integer maxConnections;
-	private Long connectionTtl;
-	private Boolean acquireHostList;
-	private LoadBalancingStrategy loadBalancingStrategy;
-	private Protocol protocol;
+	/**
+	 * Database name.
+	 */
+	private String database = "_system";
+
+	/**
+	 * Hosts to connect to. Multiple hosts can be added to provide fallbacks in a
+	 * single server with active failover or load balancing in an cluster setup.
+	 */
+	private Collection<String> hosts = new ArrayList<>();
+
+	/**
+	 * Username to use for authentication.
+	 */
+	private String user = ArangoDefaults.DEFAULT_USER;
+
+	/**
+	 * Password for the user for authentication.
+	 */
+	private String password = null;
+
+	/**
+	 * Connection and request timeout in milliseconds.
+	 */
+	private Integer timeout = ArangoDefaults.DEFAULT_TIMEOUT;
+
+	/**
+	 * If set to {@code true} SSL will be used when connecting to an ArangoDB
+	 * server.
+	 */
+	private Boolean useSsl = ArangoDefaults.DEFAULT_USE_SSL;
+
+	/**
+	 * Maximum number of connections the built in connection pool will open per
+	 * host.
+	 */
+	private Integer maxConnections = ArangoDefaults.MAX_CONNECTIONS_VST_DEFAULT;
+
+	/**
+	 * Maximum time to life of a connection.
+	 */
+	private Long connectionTtl = null;
+
+	/**
+	 * Whether or not the driver should acquire a list of available coordinators in
+	 * an ArangoDB cluster or a single server with active failover.
+	 */
+	private Boolean acquireHostList = ArangoDefaults.DEFAULT_ACQUIRE_HOST_LIST;
+
+	/**
+	 * Load balancing strategy to be used in an ArangoDB cluster setup.
+	 */
+	private LoadBalancingStrategy loadBalancingStrategy = ArangoDefaults.DEFAULT_LOAD_BALANCING_STRATEGY;
+
+	/**
+	 * Network protocol to be used to connect to ArangoDB.
+	 */
+	private Protocol protocol = ArangoDefaults.DEFAULT_NETWORK_PROTOCOL;
 
 	public ArangoProperties() {
 		super();
-		database = "_system";
-		hosts = new ArrayList<>();
-		user = ArangoDefaults.DEFAULT_USER;
-		timeout = ArangoDefaults.DEFAULT_TIMEOUT;
-		useSsl = ArangoDefaults.DEFAULT_USE_SSL;
-		maxConnections = ArangoDefaults.MAX_CONNECTIONS_VST_DEFAULT;
-		acquireHostList = ArangoDefaults.DEFAULT_ACQUIRE_HOST_LIST;
-		loadBalancingStrategy = ArangoDefaults.DEFAULT_LOAD_BALANCING_STRATEGY;
-		protocol = ArangoDefaults.DEFAULT_NETWORK_PROTOCOL;
 	}
 
 	public final String getDatabase() {
