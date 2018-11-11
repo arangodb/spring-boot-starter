@@ -54,7 +54,7 @@ public class ArangoProperties {
 	/**
 	 * Password for the user for authentication.
 	 */
-	private String password = null;
+	private String password;
 
 	/**
 	 * Connection and request timeout in milliseconds.
@@ -76,7 +76,7 @@ public class ArangoProperties {
 	/**
 	 * Maximum time to life of a connection.
 	 */
-	private Long connectionTtl = null;
+	private Long connectionTtl;
 
 	/**
 	 * Whether or not the driver should acquire a list of available coordinators in
