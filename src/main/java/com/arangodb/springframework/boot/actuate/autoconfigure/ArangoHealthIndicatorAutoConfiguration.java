@@ -26,7 +26,7 @@ import com.arangodb.springframework.core.ArangoOperations;
  *
  */
 @Configuration
-@ConditionalOnClass(ArangoOperations.class)
+@ConditionalOnClass({ ArangoOperations.class, HealthIndicator.class, HealthIndicatorAutoConfiguration.class })
 @ConditionalOnBean(ArangoOperations.class)
 @ConditionalOnEnabledHealthIndicator("arango")
 @AutoConfigureBefore(HealthIndicatorAutoConfiguration.class)
