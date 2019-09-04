@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.health.Status;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.entity.ArangoDBVersion;
-import com.arangodb.entity.ArangoDBVersion.License;
+import com.arangodb.entity.License;
 import com.arangodb.springframework.core.ArangoOperations;
 
 /**
