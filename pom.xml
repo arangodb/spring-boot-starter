@@ -5,7 +5,7 @@
 
 	<groupId>com.arangodb</groupId>
 	<artifactId>arangodb-spring-boot-starter</artifactId>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3</version>
 	<inceptionYear>2017</inceptionYear>
 	<packaging>jar</packaging>
 
@@ -291,7 +291,7 @@
 			<dependency>
 				<groupId>com.arangodb</groupId>
 				<artifactId>arangodb-spring-data</artifactId>
-				<version>3.2.4-SNAPSHOT</version>
+				<version>3.2.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
