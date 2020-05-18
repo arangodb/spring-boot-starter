@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.3.0.RELEASE] - 2020.05.18
+
+- updated dependencies management with `spring-boot-dependencies:2.3.0.RELEASE`
+
 ## [2.2.7.RELEASE] - 2020.05.14
 
 - adopted new versioning scheme matching the Spring Boot versions
