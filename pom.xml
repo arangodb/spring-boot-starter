@@ -142,7 +142,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<compilerArgument></compilerArgument>
 				</configuration>
 			</plugin>
 
@@ -294,7 +293,7 @@
 			<dependency>
 				<groupId>com.arangodb</groupId>
 				<artifactId>arangodb-spring-data</artifactId>
-				<version>3.2.5</version>
+				<version>3.3.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
