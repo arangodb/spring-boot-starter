@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.3.3.RELEASE] - 2020.05.18
+
+- updated arangodb-spring-data to 3.3.0
+- updated dependencies management with `spring-boot-dependencies:2.3.3.RELEASE`
+
 ## [2.3.0.RELEASE] - 2020.05.18
 
 - updated dependencies management with `spring-boot-dependencies:2.3.0.RELEASE`
