@@ -23,9 +23,9 @@ Add `arangodb-spring-boot-starter` to your project to auto configure Spring Data
 Configure the properties files of your application with the properties of [ArangoProperties](https://github.com/mpv1989/spring-boot-starter/blob/master/src/main/java/com/arangodb/springframework/boot/autoconfigure/ArangoProperties.java).
 
 ```
-spring.data.arangodb.database=mydb
-spring.data.arangodb.user=root
-spring.data.arangodb.password=1234
+arangodb.spring.data.database=mydb
+arangodb.spring.data.user=root
+arangodb.spring.data.password=1234
 ```
 
 ## Monitor
