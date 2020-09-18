@@ -40,8 +40,13 @@ public class SpringTest {
     public ArangoOperations operations;
 
     @Test
-    public void operationShouldBeNotNull() {
+    public void operationsShouldBeNotNull() {
         assertThat(operations).isNotNull();
+    }
+
+    @Test
+    public void getVersion() {
+        assertThat(operations.getVersion()).isNotNull();
     }
 
 }
