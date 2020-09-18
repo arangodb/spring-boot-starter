@@ -13,7 +13,7 @@ It provides the following release branches, each one compatible with the corresp
 | 2.2.x.RELEASE                | 2.2.x.RELEASE |
 | 2.1.x.RELEASE                | 2.1.x.RELEASE |
 
-Note that the adopted versioning scheme does not honour the semantic versioning rules, indeed minor version
+Note that the adopted versioning scheme does not honour the semantic versioning rules, indeed minor or patch
 releases could introduce new features or breaking changes. Please refer to 
 [releases](https://github.com/arangodb/spring-boot-starter/releases) for details.  
 
