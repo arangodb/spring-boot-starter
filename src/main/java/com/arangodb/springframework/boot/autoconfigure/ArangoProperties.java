@@ -32,7 +32,7 @@ import com.arangodb.internal.ArangoDefaults;
  * @author Mark Vollmary
  *
  */
-@ConfigurationProperties(prefix = "arangodb.spring.data")
+@ConfigurationProperties(prefix = "spring.data.arangodb")
 public class ArangoProperties {
 
 	/**
