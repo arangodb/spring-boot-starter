@@ -72,7 +72,7 @@ public class ArangoAutoConfiguration implements ArangoConfiguration {
 		final String[] split = host.split(":");
 		if (split.length != 2 || !split[1].matches("[0-9]+")) {
 			throw new ArangoDBException(String.format(
-					"Could not load host '%s' from property-value arangodb.spring.data.hosts. Expected format ip:port,ip:port,...",
+					"Could not load host '%s' from property-value spring.data.arangodb.hosts. Expected format ip:port,ip:port,...",
 					host));
 		}
 		return split;
