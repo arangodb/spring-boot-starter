@@ -20,10 +20,12 @@
 
 package com.arangodb.springframework.boot;
 
+import com.arangodb.springframework.boot.actuate.ArangoHealthIndicator;
 import com.arangodb.springframework.core.ArangoOperations;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -37,11 +39,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringTest {
 
     @Autowired
-    public ArangoOperations operations;
+    private ArangoOperations operations;
+
+    @Autowired
+    private ArangoHealthIndicator arangoHealthIndicator;
 
     @Test
-    public void operationShouldBeNotNull() {
+    public void operationsShouldBeNotNull() {
         assertThat(operations).isNotNull();
+    }
+
+    @Test
+    public void getVersion() {
+        assertThat(operations.getVersion()).isNotNull();
+    }
+
+    @Test
+    public void health() {
+        assertThat(arangoHealthIndicator.health().getStatus()).isEqualTo(Status.UP);
     }
 
 }
