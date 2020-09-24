@@ -4,9 +4,15 @@ on:
   pull_request:
     branches:
       - master
+      - release/spring-2.1
+      - release/spring-2.2
+      - release/spring-2.3
   push:
     branches:
       - master
+      - release/spring-2.1
+      - release/spring-2.2
+      - release/spring-2.3
 
 jobs:
   package:
