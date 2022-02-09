@@ -8,6 +8,7 @@ on:
       - release/spring-2.2
       - release/spring-2.3
       - release/spring-2.4
+      - release/spring-2.5
   push:
     branches:
       - master
@@ -15,6 +16,7 @@ on:
       - release/spring-2.2
       - release/spring-2.3
       - release/spring-2.4
+      - release/spring-2.5
 
 jobs:
 
