@@ -9,6 +9,8 @@ It provides the following release branches, each one compatible with the corresp
 
 | Spring Boot Starter ArangoDB | Spring Boot   |
 |------------------------------|---------------|
+| 2.6-x                        | 2.6.*         |
+| 2.5-x                        | 2.5.*         |
 | 2.4-x                        | 2.4.*         |
 | 2.3.x.RELEASE                | 2.3.x.RELEASE |
 | 2.2.x.RELEASE                | 2.2.x.RELEASE |
