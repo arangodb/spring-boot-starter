@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.7-0] - 2023.02.08
+
+- updated `arangodb-spring-data` to `3.8.0`
+
 ## [2.6-0] - 2022.02.09
 
 - changed prefix of configuration properties to `arangodb.spring.data.*`
