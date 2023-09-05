@@ -22,12 +22,12 @@ package com.arangodb.springframework.boot;
 
 import com.arangodb.springframework.boot.actuate.ArangoHealthIndicator;
 import com.arangodb.springframework.core.ArangoOperations;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michele Rastelli
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
+@EnableAutoConfiguration
+@SpringBootConfiguration
 public class SpringTest {
 
     @Autowired

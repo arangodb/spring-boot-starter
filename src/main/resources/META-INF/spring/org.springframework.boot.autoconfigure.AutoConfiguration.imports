@@ -1,0 +1,2 @@
+com.arangodb.springframework.boot.autoconfigure.ArangoAutoConfiguration
+com.arangodb.springframework.boot.actuate.autoconfigure.ArangoHealthIndicatorAutoConfiguration
