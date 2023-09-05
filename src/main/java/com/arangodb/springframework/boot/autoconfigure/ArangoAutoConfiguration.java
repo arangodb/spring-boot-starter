@@ -62,7 +62,7 @@ public class ArangoAutoConfiguration implements ArangoConfiguration {
 				.connectionTtl(properties.getConnectionTtl())
 				.acquireHostList(properties.getAcquireHostList())
 				.loadBalancingStrategy(properties.getLoadBalancingStrategy())
-				.useProtocol(properties.getProtocol());
+				.protocol(properties.getProtocol());
 		properties.getHosts().stream().map(this::parseHost)
 				.forEach(host -> builder.host(host[0], Integer.valueOf(host[1])));
 		return builder;

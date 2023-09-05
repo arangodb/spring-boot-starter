@@ -92,7 +92,7 @@ public class ArangoProperties {
 	/**
 	 * Network protocol to be used to connect to ArangoDB.
 	 */
-	private Protocol protocol = ArangoDefaults.DEFAULT_NETWORK_PROTOCOL;
+	private Protocol protocol = ArangoDefaults.DEFAULT_PROTOCOL;
 
 	public ArangoProperties() {
 		super();
