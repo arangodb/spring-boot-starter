@@ -5,7 +5,7 @@
 
     <groupId>com.arangodb</groupId>
     <artifactId>arangodb-spring-boot-starter</artifactId>
-    <version>3.0-0-SNAPSHOT</version>
+    <version>3.1-0-SNAPSHOT</version>
     <inceptionYear>2017</inceptionYear>
     <packaging>jar</packaging>
 
@@ -44,20 +44,12 @@
         </repository>
     </distributionManagement>
 
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -67,6 +59,9 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
+                                <requireMavenVersion>
+                                    <version>3.6</version>
+                                </requireMavenVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -89,7 +84,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4.1</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>assembly</id>
@@ -124,7 +119,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>3.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -133,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -146,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -159,7 +154,7 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
+                <version>3.1.2</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -171,7 +166,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.1</version>
                 <configuration>
                     <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
                 </configuration>
@@ -180,7 +175,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.0</version>
                 <configuration>
                     <gpgArguments>
                         <arg>--pinentry-mode</arg>
@@ -248,7 +243,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>3.0.10</version>
+                <version>3.1.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -256,6 +251,24 @@
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
                 <version>4.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>5.2.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.2.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-inline</artifactId>
+                <version>5.2.0</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
