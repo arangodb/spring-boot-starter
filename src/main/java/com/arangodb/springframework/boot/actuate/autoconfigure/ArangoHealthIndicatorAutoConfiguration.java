@@ -29,6 +29,10 @@ import java.util.Map;
 public class ArangoHealthIndicatorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<ArangoHealthIndicator, ArangoOperations> {
 
+    public ArangoHealthIndicatorAutoConfiguration() {
+        super(ArangoHealthIndicator::new);
+    }
+
 	@Bean
 	@ConditionalOnMissingBean(name = "arangoHealthIndicator")
 	public HealthContributor arangoHealthIndicator(Map<String, ArangoOperations> operations) {
