@@ -68,10 +68,9 @@ public class ArangoProperties {
 	private Boolean useSsl = ArangoDefaults.DEFAULT_USE_SSL;
 
 	/**
-	 * Maximum number of connections the built in connection pool will open per
-	 * host.
+	 * Maximum number of connections the built in connection pool will open per host.
 	 */
-	private Integer maxConnections = ArangoDefaults.MAX_CONNECTIONS_VST_DEFAULT;
+	private Integer maxConnections;
 
 	/**
 	 * Maximum time to life of a connection.
