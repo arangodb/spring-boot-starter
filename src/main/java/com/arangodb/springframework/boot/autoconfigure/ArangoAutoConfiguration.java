@@ -54,11 +54,13 @@ public class ArangoAutoConfiguration implements ArangoConfiguration {
         final ArangoDB.Builder builder = new ArangoDB.Builder()
                 .user(properties.getUser())
                 .password(properties.getPassword())
+                .jwt(properties.getJwt())
                 .timeout(properties.getTimeout())
                 .useSsl(properties.getUseSsl())
                 .maxConnections(properties.getMaxConnections())
                 .connectionTtl(properties.getConnectionTtl())
                 .acquireHostList(properties.getAcquireHostList())
+                .acquireHostListInterval(properties.getAcquireHostListInterval())
                 .loadBalancingStrategy(properties.getLoadBalancingStrategy())
                 .protocol(properties.getProtocol());
         properties.getHosts().stream().map(HostDescription::parse)
