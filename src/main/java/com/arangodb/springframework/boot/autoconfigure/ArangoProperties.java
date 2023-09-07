@@ -56,6 +56,11 @@ public class ArangoProperties {
 	 */
 	private String password;
 
+    /**
+     * JWT for the user authentication.
+     */
+    private String jwt;
+
 	/**
 	 * Connection and request timeout in milliseconds.
 	 */
@@ -68,10 +73,9 @@ public class ArangoProperties {
 	private Boolean useSsl = ArangoDefaults.DEFAULT_USE_SSL;
 
 	/**
-	 * Maximum number of connections the built in connection pool will open per
-	 * host.
+	 * Maximum number of connections the built in connection pool will open per host.
 	 */
-	private Integer maxConnections = ArangoDefaults.MAX_CONNECTIONS_VST_DEFAULT;
+	private Integer maxConnections;
 
 	/**
 	 * Maximum time to life of a connection.
@@ -85,6 +89,11 @@ public class ArangoProperties {
 	private Boolean acquireHostList = ArangoDefaults.DEFAULT_ACQUIRE_HOST_LIST;
 
 	/**
+	 * Interval for acquireHostList.
+	 */
+	private Integer acquireHostListInterval = ArangoDefaults.DEFAULT_ACQUIRE_HOST_LIST_INTERVAL;
+
+	/**
 	 * Load balancing strategy to be used in an ArangoDB cluster setup.
 	 */
 	private LoadBalancingStrategy loadBalancingStrategy = ArangoDefaults.DEFAULT_LOAD_BALANCING_STRATEGY;
@@ -92,7 +101,7 @@ public class ArangoProperties {
 	/**
 	 * Network protocol to be used to connect to ArangoDB.
 	 */
-	private Protocol protocol = ArangoDefaults.DEFAULT_NETWORK_PROTOCOL;
+	private Protocol protocol = ArangoDefaults.DEFAULT_PROTOCOL;
 
 	public ArangoProperties() {
 		super();
@@ -122,7 +131,15 @@ public class ArangoProperties {
 		this.password = password;
 	}
 
-	public final Collection<String> getHosts() {
+    public final String getJwt() {
+        return jwt;
+    }
+
+    public final void setJwt(String jwt) {
+        this.jwt = jwt;
+    }
+
+    public final Collection<String> getHosts() {
 		return hosts;
 	}
 
@@ -170,7 +187,15 @@ public class ArangoProperties {
 		this.acquireHostList = acquireHostList;
 	}
 
-	public final LoadBalancingStrategy getLoadBalancingStrategy() {
+    public final Integer getAcquireHostListInterval() {
+        return acquireHostListInterval;
+    }
+
+    public final void setAcquireHostListInterval(Integer acquireHostListInterval) {
+        this.acquireHostListInterval = acquireHostListInterval;
+    }
+
+    public final LoadBalancingStrategy getLoadBalancingStrategy() {
 		return loadBalancingStrategy;
 	}
 

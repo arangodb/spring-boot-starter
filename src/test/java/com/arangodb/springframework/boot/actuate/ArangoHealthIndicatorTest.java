@@ -19,18 +19,16 @@
  */
 package com.arangodb.springframework.boot.actuate;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
-import org.junit.Test;
-import org.springframework.boot.actuate.health.Status;
-
 import com.arangodb.ArangoDB;
 import com.arangodb.entity.ArangoDBVersion;
 import com.arangodb.entity.License;
 import com.arangodb.springframework.core.ArangoOperations;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.actuate.health.Status;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Mark Vollmary
@@ -53,7 +51,7 @@ public class ArangoHealthIndicatorTest {
 			doReturn(arango).when(operations).driver();
 		}
 		final ArangoHealthIndicator indicator = new ArangoHealthIndicator(operations);
-		assertThat(indicator.health().getStatus(), is(Status.UP));
+		assertThat(indicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 }

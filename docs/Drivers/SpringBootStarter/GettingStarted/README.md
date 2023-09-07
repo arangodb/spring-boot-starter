@@ -5,17 +5,15 @@
 Spring Boot Starter ArangoDB is compatible with all supported stable versions of ArangoDB server, see 
 [Product Support End-of-life Announcements](https://www.arangodb.com/eol-notice){:target="_blank"}.
 
-It provides the following release branches, each one compatible with the corresponding Spring Boot version:
 
-| Spring Boot Starter ArangoDB | Spring Boot   |
-|------------------------------|---------------|
-| 2.7-x                        | 2.7.*         |
-| 2.6-x                        | 2.6.*         |
-| 2.5-x                        | 2.5.*         |
-| 2.4-x                        | 2.4.*         |
-| 2.3.x.RELEASE                | 2.3.x.RELEASE |
-| 2.2.x.RELEASE                | 2.2.x.RELEASE |
-| 2.1.x.RELEASE                | 2.1.x.RELEASE |
+It is released in the following versions, each one compatible with the corresponding Spring Boot version:
+
+| Spring Boot Starter ArangoDB | Spring Boot |
+|------------------------------|-------------|
+| 3.1-x                        | 3.1.*       |
+| 3.0-x                        | 3.0.*       |
+| 2.7-x                        | 2.7.*       |
+
 
 Note that the adopted versioning scheme does not honour the semantic versioning rules, indeed minor or patch
 releases could introduce new features or breaking changes. Please refer to 
@@ -30,7 +28,7 @@ Add `arangodb-spring-boot-starter` to your project to auto configure Spring Data
 <dependency>
   <groupId>com.arangodb</groupId>
   <artifactId>arangodb-spring-boot-starter</artifactId>
-  <version>2.x-y</version>
+  <version>3.x-y</version>
 </dependency>
 ```
 
