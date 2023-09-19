@@ -6,12 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [3.1-0] - 2023.09.19
+
+- Spring Boot 3.1 support
+
 ## [3.0-0] - 2023.09.19
 
 - Spring Boot 3.0 support (#21)
 - updated Spring Data ArangoDB to version 4.0 and ArangoDB Java Driver to version 7.1 (#21)
 - raised required minimum Java version to JDK 17 (#21)
-- added jwt and acquireHostListInterval configuration properties (#21)
+- added `jwt` and `acquireHostListInterval` configuration properties (#21)
 
 ## [2.7-0] - 2023.02.08
 
