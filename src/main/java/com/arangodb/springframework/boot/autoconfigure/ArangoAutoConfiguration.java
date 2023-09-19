@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -39,38 +40,41 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(ArangoDB.class)
 @ConditionalOnMissingBean(ArangoOperations.class)
 @EnableConfigurationProperties(ArangoProperties.class)
-@Import(ArangoRepositoriesAutoConfigureRegistrar.class)
-public class ArangoAutoConfiguration implements ArangoConfiguration {
+@Import({ArangoRepositoriesAutoConfigureRegistrar.class, ArangoAutoConfiguration.ArangoBootConfiguration.class})
+public class ArangoAutoConfiguration {
 
-    private final ArangoProperties properties;
+    @Configuration
+    static class ArangoBootConfiguration implements ArangoConfiguration {
 
-    public ArangoAutoConfiguration(final ArangoProperties properties) {
-        super();
-        this.properties = properties;
-    }
+        private final ArangoProperties properties;
 
-    @Override
-    public ArangoDB.Builder arango() {
-        final ArangoDB.Builder builder = new ArangoDB.Builder()
-                .user(properties.getUser())
-                .password(properties.getPassword())
-                .jwt(properties.getJwt())
-                .timeout(properties.getTimeout())
-                .useSsl(properties.getUseSsl())
-                .maxConnections(properties.getMaxConnections())
-                .connectionTtl(properties.getConnectionTtl())
-                .acquireHostList(properties.getAcquireHostList())
-                .acquireHostListInterval(properties.getAcquireHostListInterval())
-                .loadBalancingStrategy(properties.getLoadBalancingStrategy())
-                .protocol(properties.getProtocol());
-        properties.getHosts().stream().map(HostDescription::parse)
-                .forEach(host -> builder.host(host.getHost(), host.getPort()));
-        return builder;
-    }
+        ArangoBootConfiguration(final ArangoProperties properties) {
+            super();
+            this.properties = properties;
+        }
 
-    @Override
-    public String database() {
+        @Override
+        public ArangoDB.Builder arango() {
+            final ArangoDB.Builder builder = new ArangoDB.Builder()
+                    .user(properties.getUser())
+                    .password(properties.getPassword())
+                    .jwt(properties.getJwt())
+                    .timeout(properties.getTimeout())
+                    .useSsl(properties.getUseSsl())
+                    .maxConnections(properties.getMaxConnections())
+                    .connectionTtl(properties.getConnectionTtl())
+                    .acquireHostList(properties.getAcquireHostList())
+                    .acquireHostListInterval(properties.getAcquireHostListInterval())
+                    .loadBalancingStrategy(properties.getLoadBalancingStrategy())
+                    .protocol(properties.getProtocol());
+            properties.getHosts().stream().map(HostDescription::parse)
+                    .forEach(host -> builder.host(host.getHost(), host.getPort()));
+            return builder;
+        }
+
+        @Override
+        public String database() {
         return properties.getDatabase();
     }
-
+    }
 }
