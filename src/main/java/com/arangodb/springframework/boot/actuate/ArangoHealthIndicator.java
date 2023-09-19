@@ -28,7 +28,7 @@ import com.arangodb.entity.ArangoDBVersion;
 import com.arangodb.springframework.core.ArangoOperations;
 
 /**
- * Simple {@link HealthIndicator} returning status information of ArangoDB
+ * Simple {@link HealthIndicator} returning status information of ArangoDB.
  *
  * @author Mark Vollmary
  *
@@ -44,7 +44,7 @@ public class ArangoHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(final Health.Builder builder) throws Exception {
+	protected void doHealthCheck(final Health.Builder builder) {
 		final ArangoDBVersion version = operations.driver().getVersion();
 		builder.up()
 			.withDetail("server", version.getServer())

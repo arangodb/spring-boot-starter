@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Import;
  * {@link EnableAutoConfiguration} class for ArangoDB
  *
  * @author Mark Vollmary
+ * @author Arne Burmeister
  */
 @AutoConfiguration
 @ConditionalOnClass(ArangoDB.class)
