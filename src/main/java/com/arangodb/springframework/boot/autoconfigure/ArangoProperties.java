@@ -42,7 +42,7 @@ public class ArangoProperties {
 
 	/**
 	 * Hosts to connect to. Multiple hosts can be added to provide fallbacks in a
-	 * single server with active failover or load balancing in an cluster setup.
+	 * single server with active failover or load balancing in a cluster setup.
 	 */
 	private Collection<String> hosts = new ArrayList<>();
 
@@ -73,7 +73,7 @@ public class ArangoProperties {
 	private Boolean useSsl = ArangoDefaults.DEFAULT_USE_SSL;
 
 	/**
-	 * Maximum number of connections the built in connection pool will open per host.
+	 * Maximum number of connections the built-in connection pool will open per host.
 	 */
 	private Integer maxConnections;
 
@@ -83,7 +83,7 @@ public class ArangoProperties {
 	private Long connectionTtl;
 
 	/**
-	 * Whether or not the driver should acquire a list of available coordinators in
+	 * Whether the driver should acquire a list of available coordinators in
 	 * an ArangoDB cluster or a single server with active failover.
 	 */
 	private Boolean acquireHostList = ArangoDefaults.DEFAULT_ACQUIRE_HOST_LIST;
