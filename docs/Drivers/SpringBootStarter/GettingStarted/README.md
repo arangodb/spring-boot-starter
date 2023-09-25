@@ -6,13 +6,14 @@ Spring Boot Starter ArangoDB is compatible with all supported stable versions of
 [Product Support End-of-life Announcements](https://www.arangodb.com/eol-notice){:target="_blank"}.
 
 
-It is released in the following versions, each one compatible with the corresponding Spring Boot version:
+It is released in the following versions, each one compatible with the corresponding versions of Spring Boot, 
+Spring Framework, Spring Data ArangoDB, ArangoDB Java Driver:
 
-| Spring Boot Starter ArangoDB | Spring Boot |
-|------------------------------|-------------|
-| 3.1-x                        | 3.1.*       |
-| 3.0-x                        | 3.0.*       |
-| 2.7-x                        | 2.7.*       |
+| Spring Boot Starter ArangoDB | Spring Boot | Spring Framework | Spring Data ArangoDB | ArangoDB Java Driver |
+|------------------------------|-------------|------------------|----------------------|----------------------|
+| 3.1-x                        | 3.1         | 6.0              | 4.0                  | 7.1                  |
+| 3.0-x                        | 3.0         | 6.0              | 4.0                  | 7.1                  |
+| 2.7-x                        | 2.7         | 5.3              | 3.10                 | 6.25                 |
 
 
 Note that the adopted versioning scheme does not honour the semantic versioning rules, indeed minor or patch
