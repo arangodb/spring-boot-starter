@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - updated `arangodb-spring-data` to version `4.0.1`
 - fixed returning `com.arangodb.internal.InternalArangoDBBuilder` from public API (#25)
 
+## [3.0-2] - 2024.01.16
+
+- updated `arangodb-spring-data` to version `4.0.1`
+- fixed returning `com.arangodb.internal.InternalArangoDBBuilder` from public API (#25)
+
 ## [3.1-1] - 2023.09.21
 
 - re-enabled bean method proxies (#23)
