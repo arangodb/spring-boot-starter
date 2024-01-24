@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+- Spring Boot 3.2 support (DE-767)
 - updated `arangodb-spring-data` to version `4.1.0`
 
 ## [3.1-2] - 2024.01.16
