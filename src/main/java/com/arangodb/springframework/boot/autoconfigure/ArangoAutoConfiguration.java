@@ -20,7 +20,9 @@
 package com.arangodb.springframework.boot.autoconfigure;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.ContentType;
 import com.arangodb.config.HostDescription;
+import com.arangodb.internal.serde.ContentTypeFactory;
 import com.arangodb.springframework.config.ArangoConfiguration;
 import com.arangodb.springframework.core.ArangoOperations;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -71,6 +73,11 @@ public class ArangoAutoConfiguration {
             properties.getHosts().stream().map(HostDescription::parse)
                     .forEach(host -> builder.host(host.getHost(), host.getPort()));
             return builder;
+        }
+
+        @Override
+        public ContentType contentType() {
+            return ContentTypeFactory.of(properties.getProtocol());
         }
 
         @Override
