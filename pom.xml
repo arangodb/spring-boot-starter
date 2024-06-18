@@ -46,16 +46,14 @@
 
     <repositories>
         <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <url>https://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
             <id>arangodb-snapshots</id>
             <url>https://oss.sonatype.org/content/groups/staging</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 
@@ -273,7 +271,7 @@
             <dependency>
                 <groupId>com.arangodb</groupId>
                 <artifactId>arangodb-spring-data</artifactId>
-                <version>4.1.0</version>
+                <version>4.2.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
