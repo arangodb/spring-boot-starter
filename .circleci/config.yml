@@ -34,24 +34,17 @@ commands:
           name: Start Database
           command: ./docker/start_db.sh
   mvn-info:
-    parameters:
-      working_directory:
-        type: 'string'
-        default: ''
     steps:
       - run:
           name: mvn version
-          working_directory: <<parameters.working_directory>>
           command: mvn --version
       - run:
           name: mvn dependency:tree
-          working_directory: <<parameters.working_directory>>
           command: mvn dependency:tree
   test:
     steps:
       - run:
           name: Test
-          working_directory: <<parameters.working_directory>>
           command: mvn test
   report:
     steps:
