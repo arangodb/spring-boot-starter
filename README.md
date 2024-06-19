@@ -3,6 +3,7 @@
 # Spring Boot Starter ArangoDB
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.arangodb/arangodb-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.arangodb/arangodb-spring-boot-starter)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/arangodb/spring-boot-starter/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/arangodb/spring-boot-starter/tree/master)
 
 - [Getting Started](docs/Drivers/SpringBootStarter/GettingStarted/README.md)
 
