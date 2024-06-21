@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - added support to Spring Boot `3.3.x` (DE-816)
 - updated `arangodb-spring-data` to version `4.2.0`
 
+## [3.2-1] - 2024.06.21
+
+- updated `arangodb-spring-data` to version `4.2.0`
+
 ## [3.2-0] - 2024.01.24
 
 - Spring Boot 3.2 support (DE-767)
