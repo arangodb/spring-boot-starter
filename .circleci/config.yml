@@ -29,10 +29,10 @@ commands:
         default: 'single'
     steps:
       - run:
-          environment:
-            DOCKER_IMAGE: <<parameters.docker-img>>
           name: Start Database
           command: ./docker/start_db.sh
+          environment:
+            DOCKER_IMAGE: <<parameters.docker-img>>
   mvn-info:
     steps:
       - run:
@@ -66,6 +66,23 @@ commands:
           key: maven-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/maven_cache_seed" }}
           paths:
             - ~/.m2/repository
+  config_gpg:
+    steps:
+      - run:
+          name: Configure GPG
+          command: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --no-tty --import --yes
+  deploy:
+    steps:
+      - run:
+          name: Deploy to Apache Maven Central
+          command: mvn -s .circleci/maven-release-settings.xml -Dmaven.test.skip=true deploy
+  release:
+    steps:
+      - run:
+          name: Release to Apache Maven Central
+          command: mvn -s .circleci/maven-release-settings.xml -Dmaven.test.skip=true nexus-staging:release
+          environment:
+            MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
 executors:
   j17:
@@ -103,13 +120,21 @@ jobs:
       - checkout
       - load_cache
       - mvn-info
-      - run:
-          name: Add GPG key
-          command: echo $GPG_PRIVATE_KEY | base64 --decode | gpg --batch --no-tty --import --yes
-      - run:
-          name: Deploy to Apache Maven Central
-          command: mvn -s .circleci/maven-release-settings.xml -DskipTests deploy
+      - config_gpg
+      - deploy
       - store_cache
+  release:
+    executor: 'j17'
+    steps:
+      - timeout
+      - checkout
+      - load_cache
+      - mvn-info
+      - config_gpg
+      - deploy
+      - release
+      - store_cache
+
 workflows:
   test:
     jobs:
@@ -132,5 +157,14 @@ workflows:
           filters:
             tags:
               only: /^deploy.*/
+            branches:
+              ignore: /.*/
+  release:
+    jobs:
+      - release:
+          context: java-release
+          filters:
+            tags:
+              only: /^release.*/
             branches:
               ignore: /.*/
