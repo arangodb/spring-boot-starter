@@ -12,4 +12,4 @@
 - [ArangoDB](https://www.arangodb.com/)
 - [Spring Data ArangoDB](https://github.com/arangodb/spring-data)
 - [Changelog](ChangeLog.md)
-- [Demo](https://github.com/mpv1989/arangodb-spring-boot-demo)
+- [Demo](./demo)
