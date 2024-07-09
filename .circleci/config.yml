@@ -38,6 +38,11 @@ commands:
       - run:
           name: mvn dependency:tree
           command: mvn dependency:tree
+  mvn-install:
+    steps:
+      - run:
+          name: mvn install
+          command: mvn install -Dmaven.test.skip=true -Dgpg.skip=true -Dmaven.javadoc.skip=true
   test:
     steps:
       - run:
@@ -108,6 +113,27 @@ jobs:
       - load_cache
       - mvn-info
       - test
+      - report
+      - store_cache
+  demo:
+    parameters:
+      docker-img:
+        type: 'string'
+        default: <<pipeline.parameters.docker-img>>
+    executor: 'j21'
+    steps:
+      - timeout
+      - checkout
+      - setup_remote_docker
+      - start-db:
+          docker-img: <<parameters.docker-img>>
+      - load_cache
+      - mvn-info
+      - mvn-install
+      - run:
+          name: Run demo
+          command: mvn spring-boot:run
+          working_directory: demo
       - report
       - store_cache
   deploy:
