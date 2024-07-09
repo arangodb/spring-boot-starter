@@ -1,4 +1,4 @@
-![ArangoDB-Logo](https://www.arangodb.com/docs/assets/arangodb_logo_2016_inverted.png)
+![ArangoDB-Logo](https://www.arangodb.com/wp-content/uploads/2016/05/ArangoDB_logo_@2.png)
 
 # Spring Data ArangoDB - Demo
 
