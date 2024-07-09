@@ -134,7 +134,6 @@ jobs:
           name: Run demo
           command: mvn spring-boot:run
           working_directory: demo
-      - report
       - store_cache
   deploy:
     executor: 'j17'
