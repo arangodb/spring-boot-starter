@@ -25,11 +25,9 @@ hs_err_pid*
 /.classpath
 /.project
 /.settings
-/target
+**/target
 /bin/
 
 # Intellij project files
-/.idea
+**/.idea
 *.iml
-/docker/jwtHeader
-/docker/jwtSecret
