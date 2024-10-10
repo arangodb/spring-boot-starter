@@ -70,11 +70,11 @@ public class AQLRunner implements CommandLineRunner {
                 .allMatch(it -> it.getSurname().equals("Lannister"))
                 .allMatch(it -> it.getAge() > 35);
 
-        System.out.println("## Find all childs and grantchilds of 'Tywin Lannister' (sort by age descending)");
-        List<Character> childs = repository.findByNameAndSurname("Tywin", "Lannister").map(tywin ->
-                repository.getAllChildsAndGrandchilds(tywin.getArangoId(), ChildOf.class)).get();
-        childs.forEach(System.out::println);
-        assertThat(childs)
+        System.out.println("## Find all children and grantchildren of 'Tywin Lannister' (sort by age descending)");
+        List<Character> children = repository.findByNameAndSurname("Tywin", "Lannister").map(tywin ->
+                repository.getAllChildrenAndGrandchildren(tywin.getArangoId(), ChildOf.class)).get();
+        children.forEach(System.out::println);
+        assertThat(children)
                 .isNotEmpty()
                 .isSortedAccordingTo(Comparator.comparing(Character::getAge).reversed());
     }

@@ -76,19 +76,19 @@ public class RelationsRunner implements CommandLineRunner {
         childOfRepo.save(new ChildOf(tyrion, tywin));
 
         Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
-        System.out.println(String.format("## These are the childs of %s:", nedStark));
-        nedStark.getChilds().forEach(System.out::println);
-        assertThat(nedStark.getChilds()).isNotEmpty();
+        System.out.println(String.format("## These are the children of %s:", nedStark));
+        nedStark.getChildren().forEach(System.out::println);
+        assertThat(nedStark.getChildren()).isNotEmpty();
 
         System.out.println("## These are the parents of 'Sansa'");
-        Iterable<Character> parentsOfSansa = characterRepo.findByChildsName("Sansa");
+        Iterable<Character> parentsOfSansa = characterRepo.findByChildrenName("Sansa");
         parentsOfSansa.forEach(System.out::println);
         assertThat(parentsOfSansa).isNotEmpty();
 
         System.out.println("## These parents have a child which is between 16 and 20 years old");
-        Iterable<Character> childsBetween16a20 = characterRepo.findByChildsAgeBetween(16, 20);
-        childsBetween16a20.forEach(System.out::println);
-        assertThat(childsBetween16a20).isNotEmpty();
+        Iterable<Character> childrenBetween16a20 = characterRepo.findByChildrenAgeBetween(16, 20);
+        childrenBetween16a20.forEach(System.out::println);
+        assertThat(childrenBetween16a20).isNotEmpty();
     }
 
 }
