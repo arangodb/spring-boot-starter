@@ -55,9 +55,9 @@ public interface CharacterRepository extends ArangoRepository<Character, String>
 
     void removeBySurnameNotLikeOrAliveFalse(String surname);
 
-    Collection<Character> findByChildsName(String name);
+    Collection<Character> findByChildrenName(String name);
 
-    Collection<Character> findByChildsAgeBetween(int lowerBound, int upperBound);
+    Collection<Character> findByChildrenAgeBetween(int lowerBound, int upperBound);
 
     @Query("FOR c IN characters FILTER c.surname == @surname SORT c.age ASC RETURN c")
     List<Character> getWithSurname(@Param("surname") String value);
@@ -67,6 +67,6 @@ public interface CharacterRepository extends ArangoRepository<Character, String>
     ArangoCursor<Character> getWithSurnameOlderThan(@Param("age") int value, @BindVars Map<String, Object> bindvars);
 
     @Query("FOR v IN 1..2 INBOUND @arangoId @@edgeCol SORT v.age DESC RETURN DISTINCT v")
-    List<Character> getAllChildsAndGrandchilds(@Param("arangoId") String arangoId, @Param("@edgeCol") Class<?> edgeCollection);
+    List<Character> getAllChildrenAndGrandchildren(@Param("arangoId") String arangoId, @Param("@edgeCol") Class<?> edgeCollection);
 
 }

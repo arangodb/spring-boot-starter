@@ -46,7 +46,7 @@ public class Character {
     private boolean alive;
     private Integer age;
     @Relations(edges = ChildOf.class, lazy = true)
-    private Collection<Character> childs;
+    private Collection<Character> children;
 
     public Character() {
         super();
@@ -115,12 +115,12 @@ public class Character {
         this.age = age;
     }
 
-    public Collection<Character> getChilds() {
-        return childs;
+    public Collection<Character> getChildren() {
+        return children;
     }
 
-    public void setChilds(final Collection<Character> childs) {
-        this.childs = childs;
+    public void setChildren(final Collection<Character> children) {
+        this.children = children;
     }
 
     @Override
@@ -133,11 +133,11 @@ public class Character {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Character character = (Character) o;
-        return alive == character.alive && Objects.equals(id, character.id) && Objects.equals(arangoId, character.arangoId) && Objects.equals(name, character.name) && Objects.equals(surname, character.surname) && Objects.equals(age, character.age) && Objects.equals(childs, character.childs);
+        return alive == character.alive && Objects.equals(id, character.id) && Objects.equals(arangoId, character.arangoId) && Objects.equals(name, character.name) && Objects.equals(surname, character.surname) && Objects.equals(age, character.age) && Objects.equals(children, character.children);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, arangoId, name, surname, alive, age, childs);
+        return Objects.hash(id, arangoId, name, surname, alive, age, children);
     }
 }
