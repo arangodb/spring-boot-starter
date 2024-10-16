@@ -373,9 +373,8 @@ Collection<Character> createCharacters = createCharacters();
 System.out.println(String.format("Save %s additional chracters",createCharacters.size()));
 repository.saveAll(createCharacters);
 
-Iterable<Character> all = repository.findAll();
-long count=StreamSupport.stream(Spliterators.spliteratorUnknownSize(all.iterator(),0),false).count();
-System.out.println(String.format("A total of %s characters are persisted in the database",count));
+long count = repository.count();
+System.out.println(String.format("A total of %s characters are persisted in the database", count));
 ```
 
 We also need the method createCharacters() which looks as follow:
@@ -409,21 +408,10 @@ public static Collection<Character> createCharacters(){
 After executing the demo again the console should print the following additional lines:
 
 ```text
-Save 42 additional chracters
-A total of 43 characters are persisted in the database
+Save 43 additional chracters
+A total of 44 characters are persisted in the database
 ```
 
-Counting is just an example of what you can do with the returned entities and it’s also not a perfect one. Fetching
-every entity from a collection only to count them is quite inefficient. As an alternative we can use the
-method `count()`
-from `ArangoRepository` or we use `ArangoOperations` for it.
-
-```java
-// count with ArangoRepository
-long count = repository.count();
-// count with ArangoOperations
-long count = operations.collection(Character.class).count();
-```
 
 ## Read with sorting and paging
 
@@ -433,7 +421,7 @@ name. Adding the following source code at the end of your `run()` method gives y
 
 ```java
 System.out.println("## Return all characters sorted by name");
-Iterable<Character> allSorted = repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+List<Character> allSorted = repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
 allSorted.forEach(System.out::println);
 ```
 
@@ -506,10 +494,9 @@ creating a Character with the same property values as the searched one. Then cre
 `Example.of(T)` and search for it with `findOne(Example)` from our `CharacterRepository`.
 
 ```java
-final Character nedStark=new Character("Ned", "Stark", false, 41);
+final Character nedStark = new Character("Ned", "Stark", false, 41);
 System.out.println(String.format("## Find character which exactly match %s",nedStark));
 Optional<Character> foundNedStark = repository.findOne(Example.of(nedStark));
-assert foundNedStark.isPresent();
 System.out.println(String.format("Found %s", foundNedStark.get()));
 ```
 
@@ -529,9 +516,7 @@ false. Because we only need these two fields in our entity, we have to ignore th
 
 ```java
 System.out.println("## Find all dead Starks");
-Iterable<Character> allDeadStarks = repository
-        .findAll(Example.of(new Character(null, "Stark", false),ExampleMatcher.matchingAll()
-        .withMatcher("surname", GenericPropertyMatcher::exact).withIgnorePaths("name", "age")));
+Iterable<Character> allDeadStarks = repository.findAll(Example.of(new Character(null, "Stark", false)));
 allDeadStarks.forEach(System.out::println);
 ```
 
@@ -554,7 +539,7 @@ System.out.println("## Find all Starks which are 30 years younger than Ned Stark
 Iterable<Character> allYoungerStarks = repository.findAll(
     Example.of(foundNedStark.get(), ExampleMatcher.matchingAll()
         .withMatcher("surname", GenericPropertyMatcher::exact)
-        .withIgnorePaths("id", "name", "alive")
+        .withIgnorePaths("id", "arangoId", "name", "alive")
         .withTransformer("age", age -> age.map(it -> (int) it - 30))));
         allYoungerStarks.forEach(System.out::println);
 ```
@@ -604,7 +589,7 @@ possible, take a look
 
 ```java
 public interface CharacterRepository extends ArangoRepository<Character, String> {
-    Iterable<Character> findBySurname(String surname);
+  Collection<Character> findBySurname(String surname);
 }
 ```
 
@@ -679,8 +664,8 @@ Now we’re creating some methods with more parts and have a look how they fit t
 return types. Again we simply add the methods in our `CharacterRepository`.
 
 ```java
-Collection<Character> findTop2DistinctBySurnameIgnoreCaseOrderByAgeDesc(String surname);
-List<Character> findBySurnameEndsWithAndAgeBetweenAndNameInAllIgnoreCase(
+List<Character> findTop2DistinctBySurnameIgnoreCaseOrderByAgeDesc(String surname);
+Collection<Character> findBySurnameEndsWithAndAgeBetweenAndNameInAllIgnoreCase(
         String suffix,
         int lowerBound,
         int upperBound,
@@ -691,11 +676,11 @@ And the method calls in `DerivedMethodRunner`.
 
 ```java
 System.out.println("## Find top 2 Lannnisters ordered by age");
-Collection<Character> top2 = repository.findTop2DistinctBySurnameIgnoreCaseOrderByAgeDesc("lannister");
+List<Character> top2 = repository.findTop2DistinctBySurnameIgnoreCaseOrderByAgeDesc("lannister");
 top2.forEach(System.out::println);
 
 System.out.println("## Find all characters which name is 'Bran' or 'Sansa' and it's surname ends with 'ark' and are between 10 and 16 years old");
-List<Character> youngStarks = repository.findBySurnameEndsWithAndAgeBetweenAndNameInAllIgnoreCase("ark", 10, 16, new String[]{"Bran", "Sansa"});
+Collection<Character> youngStarks = repository.findBySurnameEndsWithAndAgeBetweenAndNameInAllIgnoreCase("ark", 10, 16, new String[]{"Bran", "Sansa"});
 youngStarks.forEach(System.out::println);
 ```
 
@@ -719,31 +704,13 @@ Because we have a unique persistent index on the fields `name` and `surname` we 
 for both.
 
 For this example we add the method `findByNameAndSurname(String, String)` in `CharacterRepository` which return type is
-`Character`.
-
-```java
-Character findByNameAndSurname(String name, String surname);
-```
-
-When we add the method call in `DerivedMethodRunner` we should take care of `null` as a possible return value.
-
-```java
-System.out.println("## Find a single character by name & surname");
-Character tyrion = repository.findByNameAndSurname("Tyrion", "Lannister");
-if(tyrion != null){
-    System.out.println(String.format("Found %s", tyrion));
-}
-```
-
-At this point it is possible and recommended to use `Optional<T>` which was introduced with Java 8.
-
-`CharacterRepository`:
+`Optional<Character>`.
 
 ```java
 Optional<Character> findByNameAndSurname(String name, String surname);
 ```
 
-`DerivedMethodRunner`:
+And we call it from `DerivedMethodRunner`.
 
 ```java
 System.out.println("## Find a single character by name & surname");
@@ -751,7 +718,7 @@ Optional<Character> tyrion = repository.findByNameAndSurname("Tyrion", "Lanniste
 tyrion.ifPresent(c -> System.out.println(String.format("Found %s", c)));
 ```
 
-The console output should in both cases look like this:
+The console output should look like this:
 
 ```text
 ## Find a single character by name & surname
@@ -942,30 +909,30 @@ public class RelationsRunner implements CommandLineRunner {
     public void run(final String... args) throws Exception {
         System.out.println("# Relations");
         characterRepo.saveAll(CrudRunner.createCharacters());
-
+  
         // first create some relations for the Starks and Lannisters
-        characterRepo.findByNameAndSurname("Ned", "Stark").ifPresent(ned -> {
-            characterRepo.findByNameAndSurname("Catelyn", "Stark").ifPresent(catelyn -> {
-                characterRepo.findByNameAndSurname("Robb", "Stark").ifPresent(robb -> childOfRepo.saveAll(Arrays.asList(new ChildOf(robb, ned), new ChildOf(robb, catelyn))));
-                characterRepo.findByNameAndSurname("Sansa", "Stark").ifPresent(sansa -> childOfRepo.saveAll(Arrays.asList(new ChildOf(sansa, ned), new ChildOf(sansa, catelyn))));
-                characterRepo.findByNameAndSurname("Arya", "Stark").ifPresent(arya -> childOfRepo.saveAll(Arrays.asList(new ChildOf(arya, ned), new ChildOf(arya, catelyn))));
-                characterRepo.findByNameAndSurname("Bran", "Stark").ifPresent(bran -> childOfRepo.saveAll(Arrays.asList(new ChildOf(bran, ned), new ChildOf(bran, catelyn))));
-            });
-            characterRepo.findByNameAndSurname("Jon", "Snow")
-                    .ifPresent(bran -> childOfRepo.save(new ChildOf(bran, ned)));
-        });
-
-        characterRepo.findByNameAndSurname("Tywin", "Lannister").ifPresent(tywin -> {
-            characterRepo.findByNameAndSurname("Jaime", "Lannister").ifPresent(jaime -> {
-                childOfRepo.save(new ChildOf(jaime, tywin));
-                characterRepo.findByNameAndSurname("Cersei", "Lannister").ifPresent(cersei -> {
-                    childOfRepo.save(new ChildOf(cersei, tywin));
-                    characterRepo.findByNameAndSurname("Joffrey", "Baratheon").ifPresent(joffrey -> childOfRepo.saveAll(Arrays.asList(new ChildOf(joffrey, jaime), new ChildOf(joffrey, cersei))));
-                });
-            });
-            characterRepo.findByNameAndSurname("Tyrion", "Lannister")
-                    .ifPresent(tyrion -> childOfRepo.save(new ChildOf(tyrion, tywin)));
-        });
+        Character ned = characterRepo.findByNameAndSurname("Ned", "Stark").get();
+        Character catelyn = characterRepo.findByNameAndSurname("Catelyn", "Stark").get();
+        Character robb = characterRepo.findByNameAndSurname("Robb", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(robb, ned), new ChildOf(robb, catelyn)));
+        Character sansa = characterRepo.findByNameAndSurname("Sansa", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(sansa, ned), new ChildOf(sansa, catelyn)));
+        Character arya = characterRepo.findByNameAndSurname("Arya", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(arya, ned), new ChildOf(arya, catelyn)));
+        Character bran = characterRepo.findByNameAndSurname("Bran", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(bran, ned), new ChildOf(bran, catelyn)));
+        Character jon = characterRepo.findByNameAndSurname("Jon", "Snow").get();
+        childOfRepo.save(new ChildOf(jon, ned));
+  
+        Character tywin = characterRepo.findByNameAndSurname("Tywin", "Lannister").get();
+        Character jaime = characterRepo.findByNameAndSurname("Jaime", "Lannister").get();
+        childOfRepo.save(new ChildOf(jaime, tywin));
+        Character cersei = characterRepo.findByNameAndSurname("Cersei", "Lannister").get();
+        childOfRepo.save(new ChildOf(cersei, tywin));
+        Character joffrey = characterRepo.findByNameAndSurname("Joffrey", "Baratheon").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(joffrey, jaime), new ChildOf(joffrey, cersei)));
+        Character tyrion = characterRepo.findByNameAndSurname("Tyrion", "Lannister").get();
+        childOfRepo.save(new ChildOf(tyrion, tywin));
     }
 }
 ```
@@ -979,10 +946,9 @@ load all childs of a character when we fetch the character from the database. Le
 Add the following lines of code to the `run()` method of `RelationsRunner`.
 
 ```java
-characterRepo.findByNameAndSurname("Ned", "Stark").ifPresent(nedStark -> {
-    System.out.println(String.format("## These are the childs of %s:", nedStark));
-    nedStark.getChilds().forEach(System.out::println);
-});
+Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
+System.out.println(String.format("## These are the childs of %s:", nedStark));
+nedStark.getChilds().forEach(System.out::println);
 ```
 
 After executing the demo again we can see the following console output:
@@ -1005,8 +971,8 @@ With the following two methods – added in `CharacterRepository` – we can que
 given `name` and `Character` which has a child in an age between two given integers.
 
 ```java
-Iterable<Character> findByChildsName(String name);
-Iterable<Character> findByChildsAgeBetween(int lowerBound, int upperBound);
+Collection<Character> findByChildsName(String name);
+Collection<Character> findByChildsAgeBetween(int lowerBound, int upperBound);
 ```
 
 Now we add a method that calls in `RelationsRunner` and search for all parents of ‘Sansa’ and all parents which have a
@@ -1056,7 +1022,7 @@ To demonstrate this we add another method to `CharacterRepository`:
 
 ```java
 @Query("FOR c IN characters FILTER c.surname == @surname SORT c.age ASC RETURN c")
-Iterable<Character> getWithSurname(@Param("surname") String value);
+List<Character> getWithSurname(@Param("surname") String value);
 ```
 
 Here we named our bind parameter `surname` and annotated our method parameter `value` with `@Param("surname")`. Only the
@@ -1085,11 +1051,6 @@ public class AQLRunner implements CommandLineRunner {
     @Override
     public void run(final String... args) throws Exception {
         System.out.println("# AQL queries");
-
-        System.out.println("## Find all characters which are older than 21 (sort descending)");
-        final Iterable<Character> older = repository.getOlderThan(21);
-        older.forEach(System.out::println);
-
     }
 
 }
@@ -1111,7 +1072,7 @@ Add the following lines to AQLRunner.
 
 ```java
 System.out.println("## Find all characters with surname 'Lannister' (sort by age ascending)");
-Iterable<Character> lannisters = repository.getWithSurname("Lannister");
+List<Character> lannisters = repository.getWithSurname("Lannister");
 lannisters.forEach(System.out::println);
 ```
 
@@ -1134,7 +1095,7 @@ Add to `CharacterRepository`:
 
 ```java
 @Query("FOR c IN @@col FILTER c.surname == @surname AND c.age > @age RETURN c")
-Iterable<Character> getWithSurnameOlderThan(@Param("age") int value, @BindVars Map<String, Object> bindvars);
+ArangoCursor<Character> getWithSurnameOlderThan(@Param("age") int value, @BindVars Map<String, Object> bindvars);
 ```
 
 In this query we used three bind parameter `@@col`, `@surname` and `@age`. As you probably recognize one of our bind
@@ -1153,7 +1114,7 @@ System.out.println("## Find all characters with surname 'Lannister' which are ol
 Map<String, Object> bindvars = new HashMap<>();
 bindvars.put("surname", "Lannister");
 bindvars.put("@col", Character.class);
-Iterable<Character> oldLannisters = repository.getWithSurnameOlderThan(35, bindvars);
+ArangoCursor<Character> oldLannisters = repository.getWithSurnameOlderThan(35, bindvars);
 oldLannisters.forEach(System.out::println);
 ```
 
@@ -1221,7 +1182,7 @@ with the `@Param` annotation.
 
 ```java
 @Query("FOR v IN 1..2 INBOUND @arangoId @@edgeCol SORT v.age DESC RETURN DISTINCT v")
-Set<Character> getAllChildsAndGrandchilds(@Param("arangoId") String arangoId, @Param("@edgeCol") Class<?> edgeCollection);
+List<Character> getAllChildsAndGrandchilds(@Param("arangoId") String arangoId, @Param("@edgeCol") Class<?> edgeCollection);
 ```
 
 Like we did before with `Character.class` in our map we use the type of `ChildOf` as parameter value. Because we want to
@@ -1232,10 +1193,9 @@ to our query method.
 
 ```java
 System.out.println("## Find all childs and grantchilds of 'Tywin Lannister' (sort by age descending)");
-repository.findByNameAndSurname("Tywin", "Lannister").ifPresent(tywin -> {
-    Set<Character> childs = repository.getAllChildsAndGrandchilds(tywin.getArangoId(), ChildOf.class);
-    childs.forEach(System.out::println);
-});
+List<Character> childs = repository.findByNameAndSurname("Tywin", "Lannister").map(tywin ->
+        repository.getAllChildsAndGrandchilds(tywin.getArangoId(), ChildOf.class)).get();
+childs.forEach(System.out::println);
 ```
 
 After executing the demo again we can see the following console output:

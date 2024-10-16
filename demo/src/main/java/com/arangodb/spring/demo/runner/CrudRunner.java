@@ -49,7 +49,7 @@ public class CrudRunner implements CommandLineRunner {
     private CharacterRepository repository;
 
     public static Collection<Character> createCharacters() {
-        return Arrays.asList(new Character("Ned", "Stark", true), new Character("Robert", "Baratheon", false),
+        return Arrays.asList(new Character("Robert", "Baratheon", false),
                 new Character("Jaime", "Lannister", true, 36), new Character("Catelyn", "Stark", false, 40),
                 new Character("Cersei", "Lannister", true, 36), new Character("Daenerys", "Targaryen", true, 16),
                 new Character("Jorah", "Mormont", false), new Character("Petyr", "Baelish", false),
@@ -70,6 +70,10 @@ public class CrudRunner implements CommandLineRunner {
                 new Character("Daario", "Naharis", true), new Character("Missandei", null, true),
                 new Character("Tommen", "Baratheon", true), new Character("Jaqen", "H'ghar", true),
                 new Character("Roose", "Bolton", true), new Character("The High Sparrow", null, true));
+    }
+
+    public static Character createNedStark() {
+        return new Character("Ned", "Stark", true, 41);
     }
 
     @Override

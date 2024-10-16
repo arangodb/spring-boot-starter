@@ -49,6 +49,7 @@ public class RelationsRunner implements CommandLineRunner {
     public void run(final String... args) throws Exception {
         System.out.println("# Relations");
         characterRepo.saveAll(CrudRunner.createCharacters());
+        characterRepo.save(CrudRunner.createNedStark());
 
         // first create some relations for the Starks and Lannisters
         Character ned = characterRepo.findByNameAndSurname("Ned", "Stark").get();
@@ -77,6 +78,7 @@ public class RelationsRunner implements CommandLineRunner {
         Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
         System.out.println(String.format("## These are the childs of %s:", nedStark));
         nedStark.getChilds().forEach(System.out::println);
+        assertThat(nedStark.getChilds()).isNotEmpty();
 
         System.out.println("## These are the parents of 'Sansa'");
         Iterable<Character> parentsOfSansa = characterRepo.findByChildsName("Sansa");
