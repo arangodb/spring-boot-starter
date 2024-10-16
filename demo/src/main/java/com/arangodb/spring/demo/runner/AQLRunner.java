@@ -28,9 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Vollmary
@@ -42,12 +45,16 @@ public class AQLRunner implements CommandLineRunner {
     private CharacterRepository repository;
 
     @Override
-    public void run(final String... args) throws Exception {
+    public void run(final String... args) {
         System.out.println("# AQL queries");
 
         System.out.println("## Find all characters with surname 'Lannister' (sort by age ascending)");
-        Iterable<Character> lannisters = repository.getWithSurname("Lannister");
+        List<Character> lannisters = repository.getWithSurname("Lannister");
         lannisters.forEach(System.out::println);
+        assertThat(lannisters)
+                .isNotEmpty()
+                .allMatch(it -> it.getSurname().equals("Lannister"))
+                .isSortedAccordingTo(Comparator.comparing(Character::getAge, Comparator.nullsFirst(Comparator.naturalOrder())));
 
         System.out.println("## Find all characters with surname 'Lannister' which are older than 35");
         Map<String, Object> bindvars = new HashMap<>();
@@ -57,11 +64,19 @@ public class AQLRunner implements CommandLineRunner {
         System.out.println(String.format("Found %s documents", oldLannisters.getCount()));
         oldLannisters.forEach(System.out::println);
 
+        assertThat(oldLannisters.getCount()).isEqualTo(2);
+        assertThat(repository.getWithSurnameOlderThan(35, bindvars).asListRemaining())
+                .isNotEmpty()
+                .allMatch(it -> it.getSurname().equals("Lannister"))
+                .allMatch(it -> it.getAge() > 35);
+
         System.out.println("## Find all childs and grantchilds of 'Tywin Lannister' (sort by age descending)");
-        repository.findByNameAndSurname("Tywin", "Lannister").ifPresent(tywin -> {
-            Set<Character> childs = repository.getAllChildsAndGrandchilds(tywin.getArangoId(), ChildOf.class);
-            childs.forEach(System.out::println);
-        });
+        List<Character> childs = repository.findByNameAndSurname("Tywin", "Lannister").map(tywin ->
+                repository.getAllChildsAndGrandchilds(tywin.getArangoId(), ChildOf.class)).get();
+        childs.forEach(System.out::println);
+        assertThat(childs)
+                .isNotEmpty()
+                .isSortedAccordingTo(Comparator.comparing(Character::getAge).reversed());
     }
 
 }

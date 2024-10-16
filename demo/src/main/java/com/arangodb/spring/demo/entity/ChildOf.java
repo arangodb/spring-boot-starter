@@ -25,6 +25,8 @@ import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.annotation.To;
 import org.springframework.data.annotation.Id;
 
+import java.util.Objects;
+
 /**
  * @author Mark Vollmary
  */
@@ -75,4 +77,16 @@ public class ChildOf {
         return "ChildOf [id=" + id + ", child=" + child + ", parent=" + parent + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChildOf childOf = (ChildOf) o;
+        return Objects.equals(id, childOf.id) && Objects.equals(child, childOf.child) && Objects.equals(parent, childOf.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, child, parent);
+    }
 }
