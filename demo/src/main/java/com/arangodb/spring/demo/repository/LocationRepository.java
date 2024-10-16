@@ -30,6 +30,8 @@ import org.springframework.data.geo.GeoResults;
 import org.springframework.data.geo.Point;
 import org.springframework.data.geo.Polygon;
 
+import java.util.Collection;
+
 /**
  * @author Mark Vollmary
  */
@@ -39,7 +41,7 @@ public interface LocationRepository extends ArangoRepository<Location, String> {
 
     GeoResults<Location> findByLocationWithin(Point location, Distance distance);
 
-    Iterable<Location> findByLocationWithin(Point location, Range<Double> distanceRange);
+    Collection<Location> findByLocationWithin(Point location, Range<Double> distanceRange);
 
-    Iterable<Location> findByLocationWithin(Polygon polygon);
+    Collection<Location> findByLocationWithin(Polygon polygon);
 }

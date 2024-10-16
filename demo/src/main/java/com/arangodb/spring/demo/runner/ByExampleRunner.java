@@ -32,6 +32,8 @@ import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Mark Vollmary
  */
@@ -43,35 +45,47 @@ public class ByExampleRunner implements CommandLineRunner {
     private CharacterRepository repository;
 
     @Override
-    public void run(final String... args) throws Exception {
+    public void run(final String... args) {
         System.out.println("# Query by example");
 
         final Character nedStark = new Character("Ned", "Stark", false, 41);
 
         System.out.println(String.format("## Find character which exactly match %s", nedStark));
         Optional<Character> foundNedStark = repository.findOne(Example.of(nedStark));
-        assert foundNedStark.isPresent();
         System.out.println(String.format("Found %s", foundNedStark.get()));
+        assertThat(foundNedStark).isPresent();
 
         System.out.println("## Find all dead Starks");
         Iterable<Character> allDeadStarks = repository
-                .findAll(Example.of(new Character(null, "Stark", false), ExampleMatcher.matchingAll()
-                        .withMatcher("surname", GenericPropertyMatcher::exact).withIgnorePaths("name", "age")));
+                .findAll(Example.of(new Character(null, "Stark", false)));
         allDeadStarks.forEach(System.out::println);
+        assertThat(allDeadStarks)
+                .hasSize(3)
+                .noneMatch(Character::isAlive)
+                .allSatisfy(it -> assertThat(it.getSurname()).isEqualTo("Stark"));
 
         System.out.println("## Find all Starks which are 30 years younger than Ned Stark");
         Iterable<Character> allYoungerStarks = repository.findAll(
                 Example.of(foundNedStark.get(), ExampleMatcher.matchingAll()
                         .withMatcher("surname", GenericPropertyMatcher::exact)
-                        .withIgnorePaths("id", "name", "alive")
+                        .withIgnorePaths("id", "arangoId", "name", "alive")
                         .withTransformer("age", age -> age.map(it -> (int) it - 30))));
         allYoungerStarks.forEach(System.out::println);
+        assertThat(allYoungerStarks)
+                .isNotEmpty()
+                .allSatisfy(it -> {
+                    assertThat(it.getSurname()).isEqualTo("Stark");
+                    assertThat(it.getAge()).isEqualTo(foundNedStark.get().getAge() - 30);
+                });
 
         System.out.println("## Find all character which surname ends with 'ark' (ignore case)");
         Iterable<Character> ark = repository.findAll(Example.of(new Character(null, "ark", false),
                 ExampleMatcher.matchingAll().withMatcher("surname", GenericPropertyMatcher::endsWith).withIgnoreCase()
                         .withIgnorePaths("name", "alive", "age")));
         ark.forEach(System.out::println);
+        assertThat(ark)
+                .isNotEmpty()
+                .allMatch(it -> it.getSurname().endsWith("ark"));
     }
 
 }

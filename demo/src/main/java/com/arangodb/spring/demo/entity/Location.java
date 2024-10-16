@@ -25,6 +25,8 @@ import com.arangodb.springframework.annotation.GeoIndexed;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
 
+import java.util.Objects;
+
 /**
  * @author Mark Vollmary
  */
@@ -68,5 +70,18 @@ public class Location {
                 ", name='" + name + '\'' +
                 ", location=" + location +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Location location1 = (Location) o;
+        return Objects.equals(id, location1.id) && Objects.equals(name, location1.name) && Objects.equals(location, location1.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, location);
     }
 }

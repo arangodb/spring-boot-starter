@@ -31,6 +31,8 @@ import org.springframework.core.annotation.Order;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * @author Mark Vollmary
  */
@@ -47,43 +49,46 @@ public class RelationsRunner implements CommandLineRunner {
     public void run(final String... args) throws Exception {
         System.out.println("# Relations");
         characterRepo.saveAll(CrudRunner.createCharacters());
+        characterRepo.save(CrudRunner.createNedStark());
 
         // first create some relations for the Starks and Lannisters
-        characterRepo.findByNameAndSurname("Ned", "Stark").ifPresent(ned -> {
-            characterRepo.findByNameAndSurname("Catelyn", "Stark").ifPresent(catelyn -> {
-                characterRepo.findByNameAndSurname("Robb", "Stark").ifPresent(robb -> childOfRepo.saveAll(Arrays.asList(new ChildOf(robb, ned), new ChildOf(robb, catelyn))));
-                characterRepo.findByNameAndSurname("Sansa", "Stark").ifPresent(sansa -> childOfRepo.saveAll(Arrays.asList(new ChildOf(sansa, ned), new ChildOf(sansa, catelyn))));
-                characterRepo.findByNameAndSurname("Arya", "Stark").ifPresent(arya -> childOfRepo.saveAll(Arrays.asList(new ChildOf(arya, ned), new ChildOf(arya, catelyn))));
-                characterRepo.findByNameAndSurname("Bran", "Stark").ifPresent(bran -> childOfRepo.saveAll(Arrays.asList(new ChildOf(bran, ned), new ChildOf(bran, catelyn))));
-            });
-            characterRepo.findByNameAndSurname("Jon", "Snow")
-                    .ifPresent(bran -> childOfRepo.save(new ChildOf(bran, ned)));
-        });
+        Character ned = characterRepo.findByNameAndSurname("Ned", "Stark").get();
+        Character catelyn = characterRepo.findByNameAndSurname("Catelyn", "Stark").get();
+        Character robb = characterRepo.findByNameAndSurname("Robb", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(robb, ned), new ChildOf(robb, catelyn)));
+        Character sansa = characterRepo.findByNameAndSurname("Sansa", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(sansa, ned), new ChildOf(sansa, catelyn)));
+        Character arya = characterRepo.findByNameAndSurname("Arya", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(arya, ned), new ChildOf(arya, catelyn)));
+        Character bran = characterRepo.findByNameAndSurname("Bran", "Stark").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(bran, ned), new ChildOf(bran, catelyn)));
+        Character jon = characterRepo.findByNameAndSurname("Jon", "Snow").get();
+        childOfRepo.save(new ChildOf(jon, ned));
 
-        characterRepo.findByNameAndSurname("Tywin", "Lannister").ifPresent(tywin -> {
-            characterRepo.findByNameAndSurname("Jaime", "Lannister").ifPresent(jaime -> {
-                childOfRepo.save(new ChildOf(jaime, tywin));
-                characterRepo.findByNameAndSurname("Cersei", "Lannister").ifPresent(cersei -> {
-                    childOfRepo.save(new ChildOf(cersei, tywin));
-                    characterRepo.findByNameAndSurname("Joffrey", "Baratheon").ifPresent(joffrey -> childOfRepo.saveAll(Arrays.asList(new ChildOf(joffrey, jaime), new ChildOf(joffrey, cersei))));
-                });
-            });
-            characterRepo.findByNameAndSurname("Tyrion", "Lannister")
-                    .ifPresent(tyrion -> childOfRepo.save(new ChildOf(tyrion, tywin)));
-        });
+        Character tywin = characterRepo.findByNameAndSurname("Tywin", "Lannister").get();
+        Character jaime = characterRepo.findByNameAndSurname("Jaime", "Lannister").get();
+        childOfRepo.save(new ChildOf(jaime, tywin));
+        Character cersei = characterRepo.findByNameAndSurname("Cersei", "Lannister").get();
+        childOfRepo.save(new ChildOf(cersei, tywin));
+        Character joffrey = characterRepo.findByNameAndSurname("Joffrey", "Baratheon").get();
+        childOfRepo.saveAll(Arrays.asList(new ChildOf(joffrey, jaime), new ChildOf(joffrey, cersei)));
+        Character tyrion = characterRepo.findByNameAndSurname("Tyrion", "Lannister").get();
+        childOfRepo.save(new ChildOf(tyrion, tywin));
 
-        characterRepo.findByNameAndSurname("Ned", "Stark").ifPresent(nedStark -> {
-            System.out.println(String.format("## These are the childs of %s:", nedStark));
-            nedStark.getChilds().forEach(System.out::println);
-        });
+        Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
+        System.out.println(String.format("## These are the childs of %s:", nedStark));
+        nedStark.getChilds().forEach(System.out::println);
+        assertThat(nedStark.getChilds()).isNotEmpty();
 
         System.out.println("## These are the parents of 'Sansa'");
         Iterable<Character> parentsOfSansa = characterRepo.findByChildsName("Sansa");
         parentsOfSansa.forEach(System.out::println);
+        assertThat(parentsOfSansa).isNotEmpty();
 
         System.out.println("## These parents have a child which is between 16 and 20 years old");
         Iterable<Character> childsBetween16a20 = characterRepo.findByChildsAgeBetween(16, 20);
         childsBetween16a20.forEach(System.out::println);
+        assertThat(childsBetween16a20).isNotEmpty();
     }
 
 }

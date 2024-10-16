@@ -27,6 +27,7 @@ import com.arangodb.springframework.annotation.Relations;
 import org.springframework.data.annotation.Id;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * @author Mark Vollmary
@@ -127,4 +128,16 @@ public class Character {
         return "Character [id=" + id + ", name=" + name + ", surname=" + surname + ", alive=" + alive + ", age=" + age + "]";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Character character = (Character) o;
+        return alive == character.alive && Objects.equals(id, character.id) && Objects.equals(arangoId, character.arangoId) && Objects.equals(name, character.name) && Objects.equals(surname, character.surname) && Objects.equals(age, character.age) && Objects.equals(childs, character.childs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, arangoId, name, surname, alive, age, childs);
+    }
 }

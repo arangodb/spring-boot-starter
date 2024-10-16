@@ -31,11 +31,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.StreamSupport;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Vollmary
@@ -73,8 +72,12 @@ public class CrudRunner implements CommandLineRunner {
                 new Character("Roose", "Bolton", true), new Character("The High Sparrow", null, true));
     }
 
+    public static Character createNedStark() {
+        return new Character("Ned", "Stark", true, 41);
+    }
+
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         // first drop the database so that we can run this multiple times with the same dataset
         operations.dropDatabase();
 
@@ -84,35 +87,46 @@ public class CrudRunner implements CommandLineRunner {
         // there is no need of creating the collection first. This happen automatically
         final Character nedStark = new Character("Ned", "Stark", true, 41);
         repository.save(nedStark);
+
         // the generated id from the database is set in the original entity
         System.out.println(String.format("Ned Stark saved in the database with id: '%s'", nedStark.getId()));
+        assertThat(nedStark.getId()).isNotNull();
 
         // lets take a look whether we can find Ned Stark in the database
         final Optional<Character> foundNed = repository.findById(nedStark.getId());
-        assert foundNed.isPresent();
         System.out.println(String.format("Found %s", foundNed.get()));
+        assertThat(foundNed).isPresent();
 
         nedStark.setAlive(false);
         repository.save(nedStark);
         final Optional<Character> deadNed = repository.findById(nedStark.getId());
-        assert deadNed.isPresent();
         System.out.println(String.format("The 'alive' flag of the persisted Ned Stark is now '%s'", deadNed.get().isAlive()));
+        assertThat(deadNed.get().isAlive()).isFalse();
 
         Collection<Character> createCharacters = createCharacters();
-        System.out.println(String.format("Save %s additional chracters", createCharacters.size()));
-        repository.saveAll(createCharacters);
+        System.out.println(String.format("Save %s additional characters", createCharacters.size()));
+        Iterable<Character> savedCharacters = repository.saveAll(createCharacters);
+        savedCharacters.forEach(System.out::println);
+        assertThat(savedCharacters).hasSize(createCharacters.size());
 
-        Iterable<Character> all = repository.findAll();
-        long count = StreamSupport.stream(Spliterators.spliteratorUnknownSize(all.iterator(), 0), false).count();
+        long count = repository.count();
         System.out.println(String.format("A total of %s characters are persisted in the database", count));
+        assertThat(count).isGreaterThan(createCharacters.size());
 
         System.out.println("## Return all characters sorted by name");
         Iterable<Character> allSorted = repository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         allSorted.forEach(System.out::println);
+        List<Character> allSortedList = StreamSupport.stream(allSorted.spliterator(), false).toList();
+        assertThat(allSortedList)
+                .hasSize((int) count)
+                .isSortedAccordingTo(Comparator.comparing(Character::getName));
 
         System.out.println("## Return the first 5 characters sorted by name");
         Page<Character> first5Sorted = repository.findAll(PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "name")));
         first5Sorted.forEach(System.out::println);
+        assertThat(first5Sorted.get())
+                .hasSize(5)
+                .containsExactlyElementsOf(allSortedList.subList(0, 5));
     }
 
 }

@@ -27,14 +27,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Range;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.GeoPage;
-import org.springframework.data.geo.GeoResults;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
-import org.springframework.data.geo.Polygon;
+import org.springframework.data.geo.*;
 
 import java.util.Arrays;
+import java.util.Comparator;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Vollmary
@@ -64,26 +62,37 @@ public class GeospatialRunner implements CommandLineRunner {
         GeoPage<Location> first5 = repository.findByLocationNear(new Point(-5.581312, 54.368321),
                 PageRequest.of(0, 5));
         first5.forEach(System.out::println);
+        assertThat(first5).hasSize(5);
 
         System.out.println("## Find the next 5 locations near 'Winterfell' (only 3 locations left)");
         GeoPage<Location> next5 = repository.findByLocationNear(new Point(-5.581312, 54.368321),
                 PageRequest.of(1, 5));
         next5.forEach(System.out::println);
+        assertThat(next5).hasSize(3);
+
+        assertThat(first5.and(next5).get().toList())
+                .isSortedAccordingTo(Comparator.comparing(GeoResult::getDistance));
 
         System.out.println("## Find all locations within 50 kilometers of 'Winterfell'");
         GeoResults<Location> findWithing50kilometers = repository
                 .findByLocationWithin(new Point(-5.581312, 54.368321), new Distance(50, Metrics.KILOMETERS));
         findWithing50kilometers.forEach(System.out::println);
+        assertThat(findWithing50kilometers.getContent())
+                .isNotEmpty()
+                .isSortedAccordingTo(Comparator.comparing(GeoResult::getDistance));
+
 
         System.out.println("## Find all locations which are 40 to 50 kilometers away from 'Winterfell'");
         Iterable<Location> findByLocationWithin = repository.findByLocationWithin(new Point(-5.581312, 54.368321),
                 Range.of(Range.Bound.inclusive(40000.), Range.Bound.exclusive(50000.)));
         findByLocationWithin.forEach(System.out::println);
+        assertThat(findByLocationWithin).isNotEmpty();
 
         System.out.println("## Find all locations within a given polygon");
         Iterable<Location> withinPolygon = repository.findByLocationWithin(
                 new Polygon(Arrays.asList(new Point(-25, 40), new Point(-25, 70), new Point(25, 70), new Point(-25, 40))));
         withinPolygon.forEach(System.out::println);
+        assertThat(withinPolygon).isNotEmpty();
     }
 
 }
