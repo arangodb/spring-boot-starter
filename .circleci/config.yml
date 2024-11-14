@@ -169,7 +169,13 @@ workflows:
                 - 'j21'
   demo:
     jobs:
-      - demo
+      - demo:
+          name: demo-<<matrix.docker-img>>
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/arangodb:3.11'
+                - 'docker.io/arangodb/arangodb:3.12'
   deploy:
     jobs:
       - deploy:
