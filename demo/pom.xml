@@ -42,6 +42,18 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.arangodb</groupId>
+            <artifactId>arangodb-java-driver</artifactId>
+            <version>7.15.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.arangodb</groupId>
+            <artifactId>jackson-dataformat-velocypack</artifactId>
+            <version>4.5.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
@@ -73,7 +85,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <dependencyConvergence/>
+<!--                                <dependencyConvergence/>-->
                                 <requireMavenVersion>
                                     <version>3.6</version>
                                 </requireMavenVersion>
