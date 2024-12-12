@@ -2,56 +2,19 @@
 
 # Spring Data ArangoDB - Demo
 
-This is an extensive demo on how to use [Spring Data ArangoDB](https://github.com/arangodb/spring-data) with an example dataset of **Game of Thrones** characters and locations.
+## Get started
 
-## Table of Contents
+This is an extensive demo on how to use
+[Spring Data ArangoDB](https://github.com/arangodb/spring-data) with an example
+dataset of **Game of Thrones** characters and locations.
 
-* [Getting Started](#getting-started)
-  * [Build a project with Maven](#build-a-project-with-maven)
-  * [Create an Application class](#create-an-application-class)
-  * [Create a Configuration class](#create-a-configuration-class)
-* [Data modeling](#data-modeling)
-* [CRUD operations](#crud-operations)
-  * [Create a repository](#create-a-repository)
-  * [Create a CommandLineRunner](#create-a-commandlinerunner)
-  * [Save and read an entity](#save-and-read-an-entity)
-  * [Run the demo](#run-the-demo)
-  * [Update an entity](#update-an-entity)
-  * [Save and read multiple entities](#save-and-read-multiple-entities)
-  * [Read with sorting and paging](#read-with-sorting-and-paging)
-* [Query by example](#query-by-example)
-  * [Single entity](#single-entity)
-  * [Multiple entities](#multiple-entities)
-* [Derived queries](#derived-queries)
-  * [Simple findBy](#simple-findby)
-  * [Create an index](#create-an-index)
-  * [More complex findBy](#more-complex-findby)
-  * [Single entity result](#single-entity-result)
-  * [countBy](#countby)
-  * [removeBy](#removeby)
-* [Relations](#relations)
-  * [Read relations within an entity](#read-relations-within-an-entity)
-  * [findBy including relations](#findby-including-relations)
-* [Query methods](#query-methods)
-  * [Param annotation](#param-annotation)
-  * [BindVars annotation](#bindvars-annotation)
-  * [QueryOptions annotation](#queryoptions-annotation)
-  * [Graph traversal](#graph-traversal)
-* [Geospatial queries](#geospatial-queries)
-  * [Geo data modeling](#geo-data-modeling)
-  * [Near](#near)
-  * [Within](#within)
-* [Learn more](#learn-more)
+### Build a project with Maven
 
+First, you have to set up a project and add every needed dependency.
+This demo use Maven and Spring Boot and adds `arangodb-spring-boot-starter` to
+auto-configure Spring Data ArangoDB.
 
-# Getting Started
-
-## Build a project with Maven
-
-First, we have to set up a project and add every needed dependency.
-We use `Maven` and `Spring Boot` for this demo.
-
-We have to create a Maven `pom.xml`:
+Create a Maven `pom.xml`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -102,12 +65,29 @@ We have to create a Maven `pom.xml`:
 </project>
 ```
 
-## Create an Application class
+Substitute the versions with the latest available versions that are compatible.
+See the [Supported versions](#supported-versions) for details.
 
-After we have ensured that we can fetch all the necessary dependencies, we can create our first classes.
+### Monitor the server health
 
-The `DemoApplication` class is our main class where we will later add certain `CommandLineRunner` instances to be
-executed.
+ArangoDB health monitoring can be applied to your application by adding
+`spring-boot-starter-actuator` to your project and calling the
+`GET /actuator/health` endpoint against your application.
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+### Create an Application class
+
+After you have ensured that you can fetch all the necessary dependencies, you
+can create your first classes.
+
+The `DemoApplication` class is the main class where you later add certain
+`CommandLineRunner` instances to be executed.
 
 ```java
 package com.arangodb.spring.demo;
@@ -124,10 +104,12 @@ public class DemoApplication {
 }
 ```
 
-## Application Configuration
+### Application configuration
 
-We also need provide configuration for the database connection. 
-We can do this by adding to `src/main/resources/application.properties`:
+You need to provide the configuration for the database connection.
+You can do this by adding to `src/main/resources/application.properties`
+with the properties of
+[ArangoProperties](https://github.com/arangodb/spring-boot-starter/blob/main/src/main/java/com/arangodb/springframework/boot/autoconfigure/ArangoProperties.java).
 
 ```
 arangodb.spring.data.database=spring-demo
@@ -136,16 +118,18 @@ arangodb.spring.data.password=test
 arangodb.spring.data.hosts=localhost:8529
 ```
 
-# Data modeling
+## Data modeling
 
-Let's create our first bean, which will represent a collection in our database. With the `@Document` annotation, we define
-the collection as a document collection. In our case, we also define the alternative name characters for the collection.
-By default, the collection name is determined by the class name. `@Document` also provides additional options for the
-collection, which will be used at the creation time of the collection.
+Create your first bean representing a collection in your database. With the
+`@Document` annotation, you define the collection as a document collection.
+In this case, the alternative name characters for the collection are also defined.
+By default, the collection name is determined by the class name. `@Document`
+also provides additional options for the collection, which is used at the
+creation time of the collection.
 
-Because many operations on documents require a document handle, it's recommended to add a field of type `String`
-annotated with `@Id` to every entity. The name doesn't matter. It's further recommended to **not set or change** the id
-by hand.
+Because many operations on documents require a document handle, it's recommended
+to add a field of type `String` annotated with `@Id` to every entity. The name
+doesn't matter. It's further recommended to **not set or change** the id by hand.
 
 ```java
 package com.arangodb.spring.demo.entity;
@@ -196,12 +180,13 @@ public class Character {
 }
 ```
 
-# CRUD operations
+## CRUD operations
 
-## Create a repository
+### Create a repository
 
-Now that we have our data model, we want to store data. For this, we create a repository interface which
-extends `ArangoRepository`. This gives us access to CRUD operations, paging, and query by example mechanics.
+Now that you have your data model, you want to store data. For this, you create
+a repository interface which extends `ArangoRepository`. This gives you access
+to CRUD operations, paging, and query by example mechanics.
 
 ```java
 package com.arangodb.spring.demo.repository;
@@ -214,15 +199,18 @@ public interface CharacterRepository extends ArangoRepository<Character, String>
 }
 ```
 
-## Create a CommandLineRunner
+### Create a CommandLineRunner
 
-To run our demo with Spring Boot we have to create a class implementing `CommandLineRunner`. In this class we can use the
-`@Autowired` annotation to inject our `CharacterRepository` – we created one step earlier – and also `ArangoOperations` which
-offers a central support for interactions with the database over a rich feature set. It mostly offers the features from
-the [ArangoDB Java driver](https://github.com/arangodb/arangodb-java-driver) with additional exception translation.
+To run your demo with Spring Boot, you have to create a class implementing
+`CommandLineRunner`. In this class, you can use the `@Autowired` annotation to
+inject your `CharacterRepository` – created one step earlier – and also
+`ArangoOperations` which offers a central support for interactions with the
+database over a rich feature set. It mostly offers the features from the
+[ArangoDB Java driver](https://github.com/arangodb/arangodb-java-driver)
+with additional exception translation.
 
-To get the injection successfully running, we have to add `@ComponentScan` to our runner to define where Spring can find
-our configuration class `DemoConfiguration`.
+To get the injection successfully running, you have to add `@ComponentScan` to your
+runner to define where Spring can find your configuration class `DemoConfiguration`.
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -248,14 +236,16 @@ public class CrudRunner implements CommandLineRunner {
 }
 ```
 
-## Save and read an entity
+### Save and read an entity
 
-It's time to save our first entity in the database. Both the database and the collection don't have to be created
-manually. This happens automatically as soon as we execute a database request with the components involved. We don't
-have to leave the Java world to manage our database.
+It's time to save your first entity in the database. Both the database and the
+collection don't have to be created manually. This happens automatically as soon
+as you execute a database request with the components involved. You don't have
+to leave the Java world to manage your database.
 
-After we saved a character in the database the id in the original entity is updated with the one generated from the
-database. We can then use this id to find our persisted entity.
+After you saved a character in the database, the id in the original entity is
+updated with the one generated from the database. You can then use this id to
+find your persisted entity.
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -297,30 +287,32 @@ public class CrudRunner implements CommandLineRunner {
 }
 ```
 
-## Run the demo
+### Run the demo
 
-The last thing we have to do before we can successfully run our demo application is to add our command line runner
-`CrudRunner` in the list of runners in our main class `DemoApplication`.
+The last thing you have to do before you can successfully run your demo
+application is to add your command line runner `CrudRunner` to the list of
+runners in your main class `DemoApplication`.
 
 ```java
 Class<?>[]runner = new Class<?>[]{CrudRunner.class};
 ```
 
-After executing the demo application, we should see the following lines within our console output. The id will of course
-deviate.
+After executing the demo application, you should see the following lines within
+your console output. The id will of course deviate.
 
 ```
 Ned Stark saved in the database with id: '346'
 Found Character [id=346, name=Ned, surname=Stark, alive=true, age=41]
 ```
 
-## Update an entity
+### Update an entity
 
-As everyone probably knows, Ned Stark died in the first season of Game of Thrones. So, we have to update his 'alive'
-flag. Thanks to our `id` field in the class `Character`, we can use the `save()` method from our repository to perform
-an upsert with our variable `nedStark` in which `id` is already set.
+As everyone probably knows, Ned Stark died in the first season of Game of Thrones.
+So, you should to update his 'alive' flag. Thanks to the `id` field in the
+`Character` class, you can use the `save()` method of the repository to perform
+an upsert with the variable `nedStark` in which `id` is already set.
 
-Let's add the following lines of code to the end of our `run()` method in `CrudRunner`.
+Add the following lines of code to the end of our `run()` method in `CrudRunner`:
 
 ```java
 nedStark.setAlive(false);
@@ -330,7 +322,7 @@ assert deadNed.isPresent();
 System.out.println(String.format("The 'alive' flag of the persisted Ned Stark is now '%s'",deadNed.get().isAlive()));
 ```
 
-If we run our demo a second time, the console output should look like this:
+If you run the demo a second time, the console output should look like this:
 
 ```
 Ned Stark saved in the database with id: '508'
@@ -338,15 +330,17 @@ Found Character [id=508, name=Ned, surname=Stark, alive=true, age=41]
 The 'alive' flag of the persisted Ned Stark is now 'false'
 ```
 
-## Save and read multiple entities
+### Save and read multiple entities
 
-What we can do with a single entity, we can also do with multiple entities. It's not just a single method call for
-convenience purpose, it also requires only one database request.
+What you can do with a single entity, you can also do with multiple entities.
+It's not just a single method call for convenience purpose, it also requires
+only one database request.
 
-Let's save a bunch of characters. Only main casts of Game of Thrones – but that's already a lot. After that we fetch all
-of them from our collection and count them.
+The following code is for saving a bunch of characters but only the main cast of
+Game of Thrones – that's already a lot. After that, you can fetch all of them
+from your collection and count them.
 
-Extend the `run()` method with these lines of code.
+Extend the `run()` method with these lines of code:
 
 ```java
 Collection<Character> createCharacters = createCharacters();
@@ -357,7 +351,7 @@ long count = repository.count();
 System.out.println(String.format("A total of %s characters are persisted in the database", count));
 ```
 
-We also need the `createCharacters()` method which looks as follow:
+You also need the `createCharacters()` method which looks as follow:
 
 ```java
 public static Collection<Character> createCharacters(){
@@ -407,18 +401,20 @@ public static Collection<Character> createCharacters(){
         }
 ```
 
-After executing the demo again, the console should print the following additional lines:
+After executing the demo again, the console should print the following
+additional lines:
 
 ```
 Save 42 additional characters
 A total of 43 characters are persisted in the database
 ```
 
+### Read with sorting and paging
 
-## Read with sorting and paging
-
-Next to the normal `findAll()` method, `ArangoRepository` also offers the ability to sort the fetched entities by a given field
-name. Adding the following source code at the end of your `run()` method gives you all characters sorted by field `name`.
+Next to the normal `findAll()` method, `ArangoRepository` also offers the
+ability to sort the fetched entities by a given field name. Adding the following
+source code at the end of your `run()` method gives you all characters sorted by
+field `name`:
 
 ```java
 System.out.println("## Return all characters sorted by name");
@@ -426,8 +422,8 @@ List<Character> allSorted = repository.findAll(Sort.by(Sort.Direction.ASC, "name
 allSorted.forEach(System.out::println);
 ```
 
-Furthermore, it's possible to use pagination combined with sorting. With the following code you get the first 5
-characters sorted by name.
+Furthermore, it's possible to use pagination combined with sorting. With the
+following code, you get the first 5 characters sorted by name:
 
 ```java
 System.out.println("## Return the first 5 characters sorted by name");
@@ -435,7 +431,8 @@ Page<Character> first5Sorted = repository.findAll(PageRequest.of(0, 5, Sort.by(S
 first5Sorted.forEach(System.out::println);
 ```
 
-Your console output should include Arya Stark, Bran Stark, Brienne Tarth, Bronn and Catelyn Stark.
+Your console output should include Arya Stark, Bran Stark, Brienne Tarth, Bronn
+and Catelyn Stark.
 
 ```
 ## Return the first 5 characters sorted by name
@@ -446,12 +443,13 @@ Character [id=1913, name=Bronn, surname=null, alive=true, age=null]
 Character [id=1890, name=Catelyn, surname=Stark, alive=false, age=40]
 ```
 
-# Query by example
+## Query by example
 
-Since version 1.12, Spring Data provides the `QueryByExampleExecutor` interface which is also supported by ArangoDB
-Spring Data. It allows execution of queries by `Example` instances.
+Since version 1.12, Spring Data provides the `QueryByExampleExecutor` interface
+which is also supported by ArangoDB Spring Data. It allows execution of queries
+by `Example` instances.
 
-Let's create a new `CommandLineRunner` for this:
+Create a new `CommandLineRunner` for this:
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -479,7 +477,7 @@ public class ByExampleRunner implements CommandLineRunner {
 }
 ```
 
-and add it to our `DemoApplication`.
+Add it to your `DemoApplication`:
 
 ```java
 Class<?>[]runner = new Class<?>[]{
@@ -488,11 +486,12 @@ Class<?>[]runner = new Class<?>[]{
 };
 ```
 
-## Single entity
+### Single entity
 
-First, we want to find Ned Stark again. But this time we don't know the id of the persisted entity. We start with
-creating a Character with the same property values as the searched one. Then create an `Example` instance of it with
-`Example.of(T)` and search for it with `findOne(Example)` from our `CharacterRepository`.
+First, find Ned Stark again. But this time without knowing the id of the
+persisted entity. Start with creating a Character with the same property values
+as the searched one. Then create an `Example` instance of it with `Example.of(T)
+and search for it with `findOne(Example)` from your `CharacterRepository`:
 
 ```java
 final Character nedStark = new Character("Ned", "Stark", false, 41);
@@ -501,7 +500,7 @@ Optional<Character> foundNedStark = repository.findOne(Example.of(nedStark));
 System.out.println(String.format("Found %s", foundNedStark.get()));
 ```
 
-If we did everything right, the console output should be as follows:
+If you did everything right, the console output should be as follows:
 
 ```
 # Query by example
@@ -509,11 +508,12 @@ If we did everything right, the console output should be as follows:
 Found Character [id=1880, name=Ned, surname=Stark, alive=false, age=41]
 ```
 
-## Multiple entities
+### Multiple entities
 
-Now we want to find more than one entity. During the time when I watched Game of Thrones, I saw a lot of Starks dying, so
-let's take a look who is already dead. For this we create a new instance of Character with `surname` `"Stark"` and `alive`
-`false`. Because we only need these two fields in our entity, we have to ignore the other fields in our `ExampleMatcher`.
+Now find more than one entity. A lot of Starks die in Game of Thrones, so take a
+look who is already dead. For this, you create a new instance of Character with
+`surname` `"Stark"` and `alive` `false`. Because you only need these two fields
+in your entity, you have to ignore the other fields in your `ExampleMatcher`.
 
 ```java
 System.out.println("## Find all dead Starks");
@@ -530,10 +530,11 @@ Character [id=1890, name=Catelyn, surname=Stark, alive=false, age=40]
 Character [id=1899, name=Robb, surname=Stark, alive=false, age=null]
 ```
 
-In addition to search for specific values from our example entity, we can search for dynamically depending values. In
-the next example we search for a Stark who is 30 years younger than Ned Stark. Instead of changing the age for Ned Stark
-in the previously fetched entity, we use a transformer within the `ExampleMatcher` and subtract 30 from the age of Ned
-Stark.
+In addition to searching for specific values of the example entity, you can
+search for dynamically depending values. In the next example, search for a Stark
+who is 30 years younger than Ned Stark. Instead of changing the age of Ned Stark
+in the previously fetched entity, you use a transformer within the `ExampleMatcher`
+and subtract 30 from the age of Ned Stark.
 
 ```java
 System.out.println("## Find all Starks which are 30 years younger than Ned Stark");
@@ -545,8 +546,8 @@ Iterable<Character> allYoungerStarks = repository.findAll(
         allYoungerStarks.forEach(System.out::println);
 ```
 
-Because we are using the entity `foundNedStark` – fetched from the database – we have to ignore the field `id` which
-isn't `null` in this case.
+Because you are using the entity `foundNedStark` – fetched from the database –
+you have to ignore the `id` field which isn't `null` in this case.
 
 The console output should only include Arya Stark.
 
@@ -555,9 +556,10 @@ The console output should only include Arya Stark.
 Character [id=1898, name=Arya, surname=Stark, alive=true, age=11]
 ```
 
-Aside from searching for exact and transformed values we can – in case of type `String` also search for other expressions.
-In this last case, we search for every character whose `surname` ends with `"ark"`. The console output should include every
-Stark.
+Aside from searching for exact and transformed values, you can – in case of type
+`String`, also search for other expressions. In this last case, search for every
+character whose `surname` ends with `"ark"`. The console output should include
+every Stark.
 
 ```java
 System.out.println("## Find all character which surname ends with 'ark' (ignore case)");
@@ -568,23 +570,27 @@ ExampleMatcher.matchingAll().withMatcher("surname", GenericPropertyMatcher::ends
 ark.forEach(System.out::println);
 ```
 
-# Derived queries
+## Derived queries
 
-Spring Data ArangoDB supports queries derived from method names by splitting it into its semantic parts and converting
-into AQL. The mechanism strips the prefixes `find..By`, `get..By`, `query..By`, `read..By`, `stream..By`, `count..By`
-, `exists..By`,`delete..By`, `remove..By` from the method and parses the rest. The `By` acts as a separator to indicate
-the start of the criteria for the query to be built. You can define conditions on entity properties and concatenate them
+Spring Data ArangoDB supports queries derived from method names by splitting it
+into its semantic parts and converting into AQL. The mechanism strips the prefixes
+`find..By`, `get..By`, `query..By`, `read..By`, `stream..By`, `count..By`,
+`exists..By`, `delete..By`, `remove..By` from the method and parses the rest.
+The `By` acts as a separator to indicate the start of the criteria for the query
+to be built. You can define conditions on entity properties and concatenate them
 with `And` and `Or`.
 
-You can find the complete list of part types for derived queries  in the [reference documentation](https://docs.arangodb.com/stable/develop/integrations/spring-data-arangodb/reference-version-4/repositories/queries/derived-queries/).
+You can find the complete list of part types for derived queries in the
+[reference documentation](spring-data-arangodb/reference-version-4/repositories/queries/derived-queries.md).
 
-## Simple findBy
+### Simple findBy
 
-Let's start with an easy example. We want to find characters based on their `surname`.
+Start with an easy example and find characters based on their `surname`.
 
-The only thing we have to do is to add a method `findBySurname(String)` to our `CharacterRepository` with a return type
-which allows the method to return multiple instances of `Character`. For more information on which return types are
-possible, see the [reference documentation](https://docs.arangodb.com/stable/develop/integrations/spring-data-arangodb/reference-version-4/repositories/queries/#return-types).
+The only thing you have to do is to add a method `findBySurname(String)` to your
+`CharacterRepository` with a return type which allows the method to return
+multiple instances of `Character`. For more information on which return types are
+possible, see the [reference documentation](spring-data-arangodb/reference-version-4/repositories/queries/_index.md#return-types).
 
 ```java
 public interface CharacterRepository extends ArangoRepository<Character, String> {
@@ -592,7 +598,8 @@ public interface CharacterRepository extends ArangoRepository<Character, String>
 }
 ```
 
-After we extended our repository, we create a new `CommandLineRunner` and add it to our `DemoApplication`.
+After extending your repository, create a new `CommandLineRunner` and add it to
+your `DemoApplication`:
 
 ```java
 Class<?>[]runner=new Class<?>[]{
@@ -602,8 +609,8 @@ Class<?>[]runner=new Class<?>[]{
 };
 ```
 
-In the `run()` method, we call our new method `findBySurname(String)` and try to find all characters with the `surname`
-`"Lannister"`.
+In the `run()` method, call your new `findBySurname(String)` method and try to
+find all characters with the `surname` `"Lannister"`.
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -632,7 +639,8 @@ public class DerivedQueryRunner implements CommandLineRunner {
 }
 ```
 
-After executing the demo application, we should see the following lines within our console output.
+After executing the demo application, you should see the following lines in
+your console output:
 
 ```
 # Derived queries
@@ -645,8 +653,9 @@ Character [id=255, name=Tywin, surname=Lannister, alive=false, age=null]
 
 ### Create an index
 
-Indexes allow fast access to documents, provided the indexed attribute(s) are used in a query. To make `findBySurname`
-queries faster, we can create an index on the `surname` field, adding the `@PersistentIndex` to the `Character` class:
+Indexes allow fast access to documents, provided the indexed attribute(s) are
+used in a query. To make `findBySurname` queries faster, you can create an index
+on the `surname` field, adding the `@PersistentIndex` to the `Character` class:
 
 ```java
 
@@ -655,12 +664,14 @@ queries faster, we can create an index on the `surname` field, adding the `@Pers
 public class Character {
 ```
 
-Next time we run our demo, the related queries will benefit from the index and avoid performing a full collection scan.
+Next time you run the demo, the related queries benefit from the index and
+avoid performing a full collection scan.
 
-## More complex findBy
+### More complex findBy
 
-Now we're creating some methods with more parts and have a look how they fit together. Let's also use some different
-return types. Again, we simply add the methods in our `CharacterRepository`.
+Create some methods with more parts and have a look at how they fit together.
+You can use different return types. Again, simply add the methods in your
+`CharacterRepository`:
 
 ```java
 List<Character> findTop2DistinctBySurnameIgnoreCaseOrderByAgeDesc(String surname);
@@ -671,7 +682,7 @@ Collection<Character> findBySurnameEndsWithAndAgeBetweenAndNameInAllIgnoreCase(
         String[]nameList);
 ```
 
-And the method calls in `DerivedMethodRunner`.
+Also add the method calls in `DerivedMethodRunner`:
 
 ```java
 System.out.println("## Find top 2 Lannnisters ordered by age");
@@ -694,22 +705,23 @@ Character [id=452, name=Sansa, surname=Stark, alive=true, age=13]
 Character [id=456, name=Bran, surname=Stark, alive=true, age=10]
 ```
 
-## Single entity result
+### Single entity result
 
-With derived queries, we can not only query for multiple entities, but also for single entities. If we expect only a
-single entity as the result, we can use the corresponding return type.
+With derived queries, you can not only query for multiple entities, but also for
+single entities. If you expect only a single entity as the result, you can use
+the corresponding return type.
 
-Because we have a unique persistent index on the fields `name` and `surname`, we can expect only a single entity when we query
-for both.
+Because you have a unique persistent index on the fields `name` and `surname`,
+you can expect only a single entity when querying for both.
 
-For this example, we add the method `findByNameAndSurname(String, String)` in `CharacterRepository`, whose return type is
-`Optional<Character>`.
+For this example, add the method `findByNameAndSurname(String, String)` in
+`CharacterRepository`, whose return type is `Optional<Character>`.
 
 ```java
 Optional<Character> findByNameAndSurname(String name, String surname);
 ```
 
-And we call it from `DerivedMethodRunner`.
+Call it from `DerivedMethodRunner`:
 
 ```java
 System.out.println("## Find a single character by name & surname");
@@ -724,12 +736,14 @@ The console output should look like this:
 Found Character [id=974, name=Tyrion, surname=Lannister, alive=true, age=32]
 ```
 
-## countBy
+### countBy
 
-Aside from `findBy`, there are other prefixes supported – like `countBy`. In comparison to the previously used
-`operations.collection(Character.class).count();`, the `countBy` is able to include filter conditions.
+Aside from `findBy`, there are other supported prefixes like `countBy`.
+In comparison to the previously used `operations.collection(Character.class).count();`,
+the `countBy` is able to include filter conditions.
 
-With the following lines of code, we are able to only count characters which are still alive.
+With the following lines of code, you are able to only count characters that
+are still alive.
 
 `CharacterRepository`:
 
@@ -745,10 +759,10 @@ Integer alive = repository.countByAliveTrue();
 System.out.println(String.format("There are %s characters still alive", alive));
 ```
 
-## removeBy
+### removeBy
 
-The last example for derived queries is `removeBy`. Here, we remove all characters except those whose surname is ‘Stark'
-and who are still alive.
+The last example for derived queries is `removeBy`. Here, remove all characters
+except those whose surname is 'Stark' and who are still alive.
 
 `CharacterRepository`:
 
@@ -764,7 +778,7 @@ repository.removeBySurnameNotLikeOrAliveFalse("Stark");
 repository.findAll().forEach(System.out::println);
 ```
 
-We expect only Arya, Bran and Sansa to be left.
+Only Arya, Bran, and Sansa are expected to be left.
 
 ```
 ## Remove all characters except of which surname is 'Stark' and which are still alive
@@ -773,17 +787,17 @@ Character [id=1454, name=Arya, surname=Stark, alive=true, age=11]
 Character [id=1457, name=Bran, surname=Stark, alive=true, age=10]
 ```
 
-# Relations
+## Relations
 
-Because ArangoDB as a multi-model database providing graphs as one of the key features, Spring Data ArangoDB also
-supports a feature set for it.
+ArangoDB is a graph database system and Spring Data ArangoDB also supports
+features for graphs.
 
-With the `@Relations` annotation, we can define relationships between our entities. To demonstrate this we use our
-previously created entity `Character`.
+With the `@Relations` annotation, you can define relationships between the
+entities.
 
-First, we have to add a field `Collection<Character>` children annotated
-with `@Relations(edges = ChildOf.class, lazy = true)`
-to `Character`.
+To demonstrate this, use the previously created `Character` entity.
+Add a `children` field of type `Collection<Character>` annotated with
+`@Relations(edges = ChildOf.class, lazy = true)`.
 
 ```java
 @Document("characters")
@@ -808,10 +822,14 @@ public class Character {
 }
 ```
 
-Then we have to create an entity for the edge we stated in `@Relations`. Other than a normal entity annotated with
-`@Document`, this entity will be annotated with `@Edge`. This allows Spring Data ArangoDB to create an edge collection in
-the database. Just like `Character`, `ChildOf` will also get a field for its `id`. To connect two `Character` entities,
-it also gets a field of type `Character` annotated with `@From` and a field of type `Character` annotated with `@To`. `ChildOf` will be persisted in the database with the ids of these two characters.
+Then create an entity for the edge you stated in `@Relations`. Other than a
+normal entity annotated with `@Document`, this entity is annotated with
+`@Edge`. This allows Spring Data ArangoDB to create an edge collection in
+the database. Just like `Character`, `ChildOf` also gets a field for its
+`id`. To connect two `Character` entities, it also gets a field of type
+`Character` annotated with `@From` and a field of type `Character` annotated
+with `@To`. `ChildOf` is persisted in the database with the ids of these
+two characters.
 
 ```java
 package com.arangodb.spring.demo.entity;
@@ -849,8 +867,8 @@ public class ChildOf {
 }
 ```
 
-To save instances of `ChildOf` in the database, we also create a repository for it the same way we
-created `CharacterRepository`.
+To save instances of `ChildOf` in the database, create a repository for it the
+same way you created `CharacterRepository`.
 
 ```java
 package com.arangodb.spring.demo.repository;
@@ -863,8 +881,8 @@ public interface ChildOfRepository extends ArangoRepository<ChildOf, String> {
 }
 ```
 
-Now we implement another `CommandLineRunner` called `RelationsRunner` and add it to our `DemoApplication` like we did
-with all the runners before.
+Implement another `CommandLineRunner` called `RelationsRunner` and add it to
+your `DemoApplication` like with all the runners before.
 
 ```java
 Class<?>[] runner = new Class<?>[]{
@@ -875,13 +893,16 @@ Class<?>[] runner = new Class<?>[]{
 };
 ```
 
-In the newly created `RelationsRunner`, we inject `CharacterRepository` and `ChildOfRepository` and built our relations.
-First, we have to save some characters because we removed most of them within the previous chapter of this demo. To do so,
-we use the static `createCharacter()` method from our `CrudRunner`. After we have successfully persisted our characters,
-we want to save some relationships with our edge entity `ChildOf`. Because `ChildOf` requires instances of `Character`
-with the `id` field set from the database, we first have to find them in our `CharacterRepository`. To ensure we find the
-correct `Character`, we use the derived query method `findByNameAndSurename(String, String)` that gives us one
-specific `Character`. Then we create instances of `ChildOf` and save them through `ChildOfRepository`.
+In the newly created `RelationsRunner`, inject `CharacterRepository` and
+`ChildOfRepository` and built your relations. First, save some characters
+because you removed most of them earlier. To do so, use the static
+`createCharacter()` method of the `CrudRunner`. After you have successfully
+persisted your characters, save some relationships with the edge entity `ChildOf`.
+Because `ChildOf` requires instances of `Character` with the `id` field set by
+the database, you first have to find them in your `CharacterRepository`.
+To ensure you find the correct `Character`, use the derived query method
+`findByNameAndSurename(String, String)` that gives you one specific `Character`.
+Then create instances of `ChildOf` and save them through `ChildOfRepository`.
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -935,13 +956,14 @@ public class RelationsRunner implements CommandLineRunner {
 }
 ```
 
-## Read relations within an entity
+### Read relations within an entity
 
-After we add `@Relations(edges = ChildOf.class, lazy = true) Collection<Character> children;` in `Character` we can now
-load all children of a character when we fetch the character from the database. Let's again use the method
-`findByNameAndSurname(String, String)` to find one specific character.
+After you add `@Relations(edges = ChildOf.class, lazy = true) Collection<Character> children;`
+in `Character` you can load all children of a character when you fetch the
+character from the database. Use the `findByNameAndSurname(String, String)`
+method again to find one specific character.
 
-Add the following lines of code to the `run()` method of `RelationsRunner`.
+Add the following lines of code to the `run()` method of `RelationsRunner`:
 
 ```java
 Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
@@ -949,7 +971,7 @@ System.out.println(String.format("## These are the children of %s:", nedStark));
 nedStark.getChildren().forEach(System.out::println);
 ```
 
-After executing the demo again we can see the following console output:
+After executing the demo again, you can see the following console output:
 
 ```
 ## These are the children of Character [id=2547, name=Ned, surname=Stark, alive=false, age=41]:
@@ -960,21 +982,23 @@ Character [id=2556, name=Jon, surname=Snow, alive=true, age=16]
 Character [id=2484, name=Sansa, surname=Stark, alive=true, age=13]
 ```
 
-## findBy including relations
+### findBy including relations
 
-The field `children` is not persisted in the character entity itself, it is represented by the edge `ChildOf`.
-Nevertheless, we can write a derived method which includes properties of all connected `Character`.
+The `children` field is not persisted in the character entity itself, it is
+represented by the `ChildOf` edge. Nevertheless, you can write a derived method
+which includes properties of all connected `Character`.
 
-With the following two methods – added in `CharacterRepository` – we can query for `Character` which has a child with a
-given `name` and `Character` which has a child in an age between two given integers.
+With the following two methods – added in `CharacterRepository` – you can query
+for a `Character` which has a child with a given name or an age between two
+given integers.
 
 ```java
 Collection<Character> findByChildrenName(String name);
 Collection<Character> findByChildrenAgeBetween(int lowerBound, int upperBound);
 ```
 
-Now we add a method that calls in `RelationsRunner` and search for all parents of ‘Sansa' and all parents which have a
-child between 16 and 20 years old.
+Call these methods in `RelationsRunner` and search for all parents of 'Sansa'
+and all parents that have a child between 16 and 20 years old.
 
 ```
 System.out.println("## These are the parents of 'Sansa'");
@@ -986,8 +1010,9 @@ Iterable<Character> childrenBetween16a20 = characterRepo.findByChildrenAgeBetwee
 childrenBetween16a20.forEach(System.out::println);
 ```
 
-The console output shows us that Ned and Catelyn are the parents of Sansa and that Ned, Jamie and Cersei have at least
-one child in the age between 16 and 20 years.
+The console output shows us that Ned and Catelyn are the parents of Sansa and
+that Ned, Jamie, and Cersei have at least one child in the age between 16 and
+20 years.
 
 ```
 ## These are the parents of 'Sansa'
@@ -999,38 +1024,42 @@ Character [id=2997, name=Jaime, surname=Lannister, alive=true, age=36]
 Character [id=2999, name=Cersei, surname=Lannister, alive=true, age=36]
 ```
 
-# Query methods
+## Query methods
 
-We will now take a look at repository methods with self-written AQL.
+You can have repository methods with self-written AQL queries.
 
-When it comes to more complex use cases where a derived method would get way too long and become unreadable, queries
-using [ArangoDB Query Language (AQL)](https://docs.arangodb.com/stable/aql/) can be supplied with the `@Query`
-annotation on methods in our repositories.
+When it comes to more complex use cases where a derived method would get way too
+long and become unreadable, queries using the [ArangoDB Query Language (AQL)](../../aql/_index.md)
+can be supplied with the `@Query` annotation on methods in your repositories.
 
-AQL supports the usage of [bind parameters](https://docs.arangodb.com/stable/aql/fundamentals/bind-parameters/),
-thus allowing to separate the query text from literal values used in the query. There are three ways of passing bind
-parameters to the query in the `@Query` annotation.
+AQL supports the usage of [bind parameters](../../aql/fundamentals/bind-parameters.md),
+thus allowing to separate the query text from literal values used in the query.
+There are three ways of passing bind parameters to the query in the `@Query`
+annotation that are described below.
 
-## Param annotation
+### Param annotation
 
-To pass bind parameters to our query, we can use the `@Param` annotation. With the `@Param` annotation, the argument will
-be placed in the query at the place corresponding to the value passed to the `@Param` annotation.
+To pass bind parameters to your query, you can use the `@Param` annotation.
+With the `@Param` annotation, the argument is placed in the query at the place
+corresponding to the value passed to the `@Param` annotation.
 
-To demonstrate this, we add another method to `CharacterRepository`:
+To demonstrate this, add another method to `CharacterRepository`:
 
 ```java
 @Query("FOR c IN characters FILTER c.surname == @surname SORT c.age ASC RETURN c")
 List<Character> getWithSurname(@Param("surname") String value);
 ```
 
-Here, we named our bind parameter `surname` and annotated our method parameter `value` with `@Param("surname")`. Only the
-value in the `@Param` annotation has to match with our bind parameter, the method parameter name does not matter.
+Here, the bind parameter is named `surname` and the method parameter `value` is
+annoated with `@Param("surname")`. Only the value in the `@Param` annotation has
+to match with your bind parameter, the method parameter name does not matter.
 
-As you can see, we used the collection name `characters` and not `character` in our query. Normally, a collection would be
-named like the corresponding entity class. But as you probably remember, we used `@Document("characters")` in `Character`
-which set the collection name to `characters`.
+Note that this uses the collection name `characters` and not `character` in your
+query. Normally, a collection would be named like the corresponding entity class.
+However, you used `@Document("characters")` in `Character` which set the
+collection name to `characters`.
 
-Now we create a new `CommandLineRunner` and add it to our `DemoApplication`.
+Create a new `CommandLineRunner` and add it to our `DemoApplication`:
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -1065,7 +1094,7 @@ Class<?>[]runner=new Class<?>[]{
 };
 ```
 
-Add the following lines to `AQLRunner`.
+Add the following lines to `AQLRunner`:
 
 ```java
 System.out.println("## Find all characters with surname 'Lannister' (sort by age ascending)");
@@ -1083,28 +1112,30 @@ Character [id=7596, name=Jaime, surname=Lannister, alive=true, age=36]
 Character [id=7598, name=Cersei, surname=Lannister, alive=true, age=36]
 ```
 
-## BindVars annotation
+### BindVars annotation
 
-In addition to number matching and the `@Param` annotation, we can use a method parameter of type `Map<String, Object>`
-annotated with `@BindVars` as our bind parameters. We can then fill the map with any parameter used in the query.
+In addition to number matching and the `@Param` annotation, you can use a method
+parameter of type `Map<String, Object>` annotated with `@BindVars` as your
+bind parameters. You can then fill the map with any parameter used in the query.
 
-Add to `CharacterRepository`:
+Add the following to `CharacterRepository`:
 
 ```java
 @Query("FOR c IN @@col FILTER c.surname == @surname AND c.age > @age RETURN c")
 ArangoCursor<Character> getWithSurnameOlderThan(@Param("age") int value, @BindVars Map<String, Object> bindvars);
 ```
 
-In this query, we used three bind parameter `@@col`, `@surname`, and `@age`. As you probably recognize, one of our bind
-parameter is written with two `@`. This is a special type of bind parameter that exists for injecting collection names. This
-type of bind parameter has a name prefixed with an additional `@` symbol.
+This query uses three bind parameters `@@col`, `@surname`, and `@age`.
+One of the bind parameter is written with two `@`. This is a special type of
+bind parameter that exists for injecting collection names. This type of
+bind parameter has a name prefixed with an additional `@` symbol.
 
-Furthermore, we can see that we used `@Param` for our bind parameter `@age` but not for `@@col` and `@surname`. These
-bind parameters have to be passed through the map annotated with `@BindVars`. It is also possible to use both
-annotations within one query method.
+Furthermore, `@Param` is used for the `@age` bind parameter but not for `@@col`
+and `@surname`. These bind parameters have to be passed through the map annotated
+with `@BindVars`. It is also possible to use both annotations within one query method.
 
-The method call looks as expected. We pass an integer for the `age` bind parameter and a map with the keys `surname` and
-`@col` to our new method.
+The method call looks as expected. An integer is passed for the `age`
+bind parameter and a map with the keys `surname` and `@col` to your new method.
 
 ```java
 System.out.println("## Find all characters with surname 'Lannister' which are older than 35");
@@ -1115,10 +1146,11 @@ ArangoCursor<Character> oldLannisters = repository.getWithSurnameOlderThan(35, b
 oldLannisters.forEach(System.out::println);
 ```
 
-One additional special handling for collection bind parameter is that we do not have to pass the collection name as a
-String to our method. We can pass the type (`Character.class`) to our method. Spring Data ArangoDB will then determine
-the collection name. This is very convenient if you have used an alternative collection name within the
-`@Document` or `@Edge` annotations.
+One additional special handling for collection bind parameter is that you do not
+have to pass the collection name as a String to the method. You can pass the type
+(`Character.class`) to your method. Spring Data ArangoDB determines the
+collection name. This is very convenient if you have used an alternative
+collection name within the `@Document` or `@Edge` annotations.
 
 The console output should be as follows:
 
@@ -1128,18 +1160,21 @@ Character [id=8294, name=Jaime, surname=Lannister, alive=true, age=36]
 Character [id=8296, name=Cersei, surname=Lannister, alive=true, age=36]
 ```
 
-## QueryOptions annotation
+### QueryOptions annotation
 
-Sometimes, you want to be able to configure the query execution on a technical level. For this Spring Data ArangoDB
-provides the `@QueryOptions` annotation. With this annotation, you are able to set something like a batch size to control
-the number of results to be transferred from the database server in one roundtrip and some other things.
+Sometimes, you want to be able to configure the query execution on a technical
+level. Spring Data ArangoDB provides the `@QueryOptions` annotation for this.
+With this annotation, you are able to set something like a batch size to control
+the number of results to be transferred from the database server in one roundtrip
+and some other things.
 
-For our example, we want to return the number of found results. To achieve that we have to change the return type in our
-previously created `getWithSurnameOlderThan(int, Map)` method from `Iterable<Character>` to `ArangoCursor<Character>`.
-`ArangoCursor` provides a `getCount()` method that gives us the number of found results. But this value is only
-returned from the database when we set the `count` flag in our query options to `true`, so we also have to add
-the `@QueryOptions`
-annotation to our method with `count = true`.
+For example, you can return the number of found results. To achieve that you
+have to change the return type in the previously created `getWithSurnameOlderThan(int, Map)`
+method from `Iterable<Character>` to `ArangoCursor<Character>`. `ArangoCursor`
+provides a `getCount()` method that gives you the number of found results.
+But this value is only returned from the database when you set the `count` flag
+in the query options to `true`, so you also have to add the `@QueryOptions`
+annotation to the method with `count = true`.
 
 ```java
 @Query("FOR c IN @@col FILTER c.surname == @surname AND c.age > @age RETURN c")
@@ -1147,8 +1182,8 @@ annotation to our method with `count = true`.
 Iterable<Character> getWithSurnameOlderThan(@Param("age") int value, @BindVars Map<String, Object> bindvars);
 ```
 
-Now, when we change the type of our `oldLannisters` local variable in `AQLRunner` to `ArangoCursor`, we can get the count
-value from it.
+If you change the type of our `oldLannisters` local variable in `AQLRunner`
+to `ArangoCursor`, you can get the count value from it.
 
 ```java
 ArangoCursor<Character> oldLannisters = repository.getWithSurnameOlderThan(35, bindvars);
@@ -1156,7 +1191,7 @@ System.out.println(String.format("Found %s documents", oldLannisters.getCount())
 oldLannisters.forEach(System.out::println);
 ```
 
-Our new console output should then look like this:
+The new console output should look like this:
 
 ```
 ## Find all characters with surname 'Lannister' which are older than 35
@@ -1165,15 +1200,15 @@ Character [id=9012, name=Jaime, surname=Lannister, alive=true, age=36]
 Character [id=9014, name=Cersei, surname=Lannister, alive=true, age=36]
 ```
 
-## Graph traversal
+### Graph traversal
 
-Let's finish the query method topic of our demo with
-a [graph traversal](https://docs.arangodb.com/stable/aql/graphs/traversals/) written in AQL where our edge
-`ChildOf` is involved.
+To finish the query method topic, add a [graph traversal](../../aql/graphs/traversals.md)
+written in AQL to this demo where the `ChildOf` edges are involved.
 
-The following query searches for every `Character` connected (through `ChildOf`) with the character to whom the
-passed `id` belongs to. This time we specified the edge collection within the query which we pass as a bind parameter
-with the `@Param` annotation.
+The following query searches for every `Character` connected (through `ChildOf`)
+with the character to whom the passed `id` belongs to. This time, specify the
+edge collection in the query that you pass as a bind parameter with the
+`@Param` annotation.
 
 `CharacterRepository`:
 
@@ -1182,9 +1217,10 @@ with the `@Param` annotation.
 List<Character> getAllChildrenAndGrandchildren(@Param("arangoId") String arangoId, @Param("@edgeCol") Class<?> edgeCollection);
 ```
 
-Like we did before with `Character.class` in our map, we use the type of `ChildOf` as parameter value. Because we want to
-find all children and grandchildren of Tywin Lannister we first have to find him to get his `id` which we can then pass
-to our query method.
+Like before with `Character.class` in your map, use the type of `ChildOf` as
+the parameter value. To find all children and grandchildren of Tywin Lannister,
+you first have to find him to get his `id` which you can then pass to the
+query method.
 
 `AQLRunner`:
 
@@ -1195,7 +1231,7 @@ List<Character> children = repository.findByNameAndSurname("Tywin", "Lannister")
 children.forEach(System.out::println);
 ```
 
-After executing the demo again we can see the following console output:
+After executing the demo again, you can see the following console output:
 
 ```
 ## Find all children and grantchildren of 'Tywin Lannister' (sort by age descending)
@@ -1205,28 +1241,32 @@ Character [id=11253, name=Joffrey, surname=Baratheon, alive=false, age=19]
 Character [id=11240, name=Jaime, surname=Lannister, alive=true, age=36]
 ```
 
-# Geospatial queries
+## Geospatial queries
 
-We will now take a look at geospatial queries.
-
-Geospatial queries are a subsection of derived queries. To use a geospatial query on a collection, a geo index must
-exist on that collection. A geo index can be created on a field which is a two element array, corresponding to latitude
+Geospatial queries are a subsection of derived queries. To use a geospatial
+query on a collection, a geo index must exist on that collection. A geo index
+can be created on a field which is a two element array, corresponding to latitude
 and longitude coordinates.
 
-As a subsection of derived queries, geospatial queries support the same return types, and also these additional three
-return types: `GeoPage`, `GeoResult`, and `GeoResults`. These types must be used in order to get the distance of each
-document as generated by the query.
+As a subsection of derived queries, geospatial queries support the same
+return types, and also these additional three return types: `GeoPage`,
+`GeoResult`, and `GeoResults`. These types must be used in order to get the
+distance of each document as generated by the query.
 
-## Geo data modeling
+### Geo data modeling
 
-To demonstrate geospatial queries, we create a new entity class `Location` with a field `location` of type `org.springframework.data.geo.Point`. We
-also have to create a geo index on this field. We can do so by annotating the field with `@GeoIndexed(geoJson = true)`. As you probably
-remember, we have already used an index in our `Character` class, but we annotated the type and not the affected fields.
-Spring Data ArangoDB offers two ways of defining an index. With `@<IndexType>Indexed` annotations, indexes for single
-fields can be defined. If the index should include multiple fields, the `@<IndexType>Index` annotations can be used on
-the type instead. See the
-[reference documentation](https://docs.arangodb.com/stable/develop/integrations/spring-data-arangodb/reference-version-4/mapping/indexes/) for more
-information.
+To demonstrate geospatial queries, create a new entity class `Location` with a
+`location` field of type `org.springframework.data.geo.Point`. You also have to
+create a geo index on this field. You can do so by annotating the field with
+`@GeoIndexed(geoJson = true)`. As you probably remember, you have already used
+an index in the `Character` class, but you annotated the type and not the
+affected fields.
+
+Spring Data ArangoDB offers two ways of defining an index. With the
+`@<IndexType>Indexed` annotations, indexes for single fields can be defined.
+If the index should include multiple fields, the `@<IndexType>Index` annotations
+can be used on the type instead. See the [reference documentation](spring-data-arangodb/reference-version-4/mapping/indexes.md)
+for more information.
 
 Create a new `Location` class:
 
@@ -1282,8 +1322,9 @@ public interface LocationRepository extends ArangoRepository<Location, String> {
 }
 ```
 
-After that, we create a new `CommandLineRunner`, add it to our `DemoApplication`, and perform some insert operations with
-some popular locations from Game of Thrones with the coordinates of their real counterparts.
+After that, create a new `CommandLineRunner`, add it to your `DemoApplication`,
+and perform some insert operations with some popular locations from
+Game of Thrones with the coordinates of their real counterparts:
 
 ```java
 package com.arangodb.spring.demo.runner;
@@ -1333,9 +1374,10 @@ Class<?>[]runner=new Class<?>[]{
 
 There are two kinds of geospatial query: `Near` and `Within`.
 
-## Near
+### Near
 
-`Near` sorts entities by distance from a given point. The result can be restricted with paging.
+`Near` sorts entities by distance from a given point.
+The result can be restricted with paging.
 
 `LocationRepository`:
 
@@ -1343,8 +1385,9 @@ There are two kinds of geospatial query: `Near` and `Within`.
 GeoPage<Location> findByLocationNear(Point location,Pageable pageable);
 ```
 
-In this example, we search for locations sorted by distance to a given point which match the coordinates of Winterfell.
-We use pagination to split the results in pages of five locations.
+In this example, search for locations sorted by distance to a given point,
+matching the coordinates of Winterfell. Use pagination to split the results in
+pages of five locations.
 
 ```java
 System.out.println("## Find the first 5 locations near 'Winterfell'");
@@ -1356,7 +1399,8 @@ GeoPage<Location> next5 = repository.findByLocationNear(new Point(-5.581312, 54.
 next5.forEach(System.out::println);
 ```
 
-Because we used the coordinates of Winterfell, the distance in the output of Winterfell is `0`.
+Because you use the coordinates of Winterfell, the distance in the output to
+Winterfell is `0`.
 
 ```
 ## Find the first 5 locations near 'Winterfell'
@@ -1371,18 +1415,20 @@ GeoResult [content: Location [id=14401, name=Dragonstone, location=[55.167801, -
 GeoResult [content: Location [id=14408, name=Beyond the wall, location=[64.265473, -21.094093]], distance: 7350.229798961836 KILOMETERS, ]
 ```
 
-## Within
+### Within
 
-`Within` both sorts and filters entities, returning those within the given distance, range, or shape.
+`Within` both sorts and filters entities, returning those within the given
+distance, range, or shape.
 
-Let's add some methods to `LocationRepository` that use different filter criteria.
+Add some methods to `LocationRepository` that use different filter criteria:
 
 ```java
 GeoResults<Location> findByLocationWithin(Point location,Distance distance);
 Iterable<Location> findByLocationWithin(Point location,Range<Double> distanceRange);
 ```
 
-With these methods, we can search for locations within a given distance or range to our point – Winterfell.
+With these methods, you can search for locations within a given distance or
+range to our point – Winterfell.
 
 ```java
 System.out.println("## Find all locations within 50 kilometers of 'Winterfell'");
@@ -1396,8 +1442,9 @@ Iterable<Location> findByLocationWithin = repository.findByLocationWithin(new Po
 findByLocationWithin.forEach(System.out::println);
 ```
 
-As you can see in our console output, both _Winterfell_ and _Vaes Dothrak_ are located within a 50 kilometers radius
-around our point. But only _Vaes Dothrak_ is obviously more than 40 kilometers away from it.
+As you can see in the console output, both _Winterfell_ and _Vaes Dothrak_ are
+located within a 50 kilometers radius around your point. But only _Vaes Dothrak_
+is obviously more than 40 kilometers away from it.
 
 ```
 ## Find all locations within 50 kilometers of 'Winterfell'
@@ -1407,10 +1454,10 @@ GeoResult [content: Location [id=14844, name=Vaes Dothrak, location=[54.16776, -
 Location [id=14844, name=Vaes Dothrak, location=[54.16776, -6.096125]]
 ```
 
-But we can not only implement geo functions going from a single point, but it is also possible to search for locations
-within a polygon.
+You cannot only implement geo functions going from a single point but it is also
+possible to search for locations within a polygon.
 
-In our last example, we add a method using `Polygon`.
+Add a method using `Polygon`:
 
 `LocationRepository`:
 ```java
@@ -1431,12 +1478,3 @@ The console output should be as follows:
 ## Find all locations within a given polygon
 Location [id=16922, name=Beyond the wall, location=[64.265473, -21.094093]]
 ```
-
-That's it! You should now have an overview of the possibilities with Spring Data ArangoDB.
-
-
-# Learn more
-
-* [ArangoDB](https://www.arangodb.com/)
-* [Spring Data ArangoDB](https://github.com/arangodb/spring-data)
-* [ArangoDB Java Driver](https://github.com/arangodb/arangodb-java-driver)
