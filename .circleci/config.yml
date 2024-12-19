@@ -6,10 +6,6 @@ parameters:
     default: ""
 
 commands:
-  setup_docker:
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
   timeout:
     parameters:
       duration:
@@ -111,7 +107,7 @@ jobs:
     steps:
       - timeout
       - checkout
-      - setup_docker
+      - setup_remote_docker
       - start-db:
           docker-img: <<parameters.docker-img>>
       - load_cache
@@ -128,7 +124,7 @@ jobs:
     steps:
       - timeout
       - checkout
-      - setup_docker
+      - setup_remote_docker
       - start-db:
           docker-img: <<parameters.docker-img>>
       - load_cache
