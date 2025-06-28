@@ -43,6 +43,7 @@ public class DemoApplication {
                 AQLRunner.class,
                 GeospatialRunner.class
         };
-        System.exit(SpringApplication.exit(SpringApplication.run(runner, args)));
+        //System.exit(SpringApplication.exit(SpringApplication.run(runner, args)));
+        SpringApplication.run(runner, args);
     }
 }
