@@ -49,7 +49,7 @@ Create a Maven `pom.xml`:
         <dependency>
             <groupId>com.arangodb</groupId>
             <artifactId>arangodb-spring-boot-starter</artifactId>
-            <version>4.0-0-SNAPSHOT</version>
+            <version>4.0-0</version>
         </dependency>
     </dependencies>
 

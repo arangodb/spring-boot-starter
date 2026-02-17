@@ -5,7 +5,7 @@
 
     <groupId>com.arangodb</groupId>
     <artifactId>arangodb-spring-boot-starter</artifactId>
-    <version>4.0-0-SNAPSHOT</version>
+    <version>4.0-0</version>
     <inceptionYear>2017</inceptionYear>
     <packaging>jar</packaging>
 
@@ -250,12 +250,6 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>5.21.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-inline</artifactId>
                 <version>5.21.0</version>
                 <scope>test</scope>
             </dependency>
