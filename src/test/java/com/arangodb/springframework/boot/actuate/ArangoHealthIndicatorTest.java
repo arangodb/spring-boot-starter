@@ -24,7 +24,7 @@ import com.arangodb.entity.ArangoDBVersion;
 import com.arangodb.entity.License;
 import com.arangodb.springframework.core.ArangoOperations;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.actuate.health.Status;
+import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
