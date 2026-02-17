@@ -14,31 +14,13 @@
         <relativePath/>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>4.0.2</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <url>https://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>arangodb-snapshots</id>
-            <url>https://oss.sonatype.org/content/groups/staging</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -48,7 +30,7 @@
         <dependency>
             <groupId>com.arangodb</groupId>
             <artifactId>arangodb-spring-boot-starter</artifactId>
-            <version>3.4-1-SNAPSHOT</version>
+            <version>4.0-0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -75,7 +57,7 @@
                             <rules>
                                 <dependencyConvergence/>
                                 <requireMavenVersion>
-                                    <version>3.6</version>
+                                    <version>3.6.3</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
