@@ -86,6 +86,9 @@ executors:
   j21:
     docker:
       - image: 'cimg/openjdk:21.0'
+  j25:
+    docker:
+      - image: 'cimg/openjdk:25.0'
 
 jobs:
   test:
@@ -149,20 +152,18 @@ workflows:
               jdk:
                 - 'j17'
                 - 'j21'
+                - 'j25'
   demo:
     jobs:
       - demo:
-          name: demo-<<matrix.docker-img>>
-          matrix:
-            parameters:
-              docker-img:
-                - 'docker.io/arangodb/enterprise:3.12'
+          name: demo
+
   deploy:
     jobs:
       - deploy:
           context: java-release
           filters:
             tags:
-              only: /^deploy.*/
+              only: /^deploy-3\..*/
             branches:
               ignore: /.*/
