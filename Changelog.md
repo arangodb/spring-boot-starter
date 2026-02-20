@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [3.5-0] - 2026.02.20
+
+- added support to Spring Boot `3.5`
+
 ## [3.4-0] - 2024.12.12
 
 - added support to Spring Boot `3.4`
