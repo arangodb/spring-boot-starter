@@ -103,6 +103,8 @@ public class ArangoProperties {
 	 */
 	private Protocol protocol = ArangoDefaults.DEFAULT_PROTOCOL;
 
+	private Boolean returnOriginalEntities;
+
 	public ArangoProperties() {
 		super();
 	}
@@ -211,4 +213,11 @@ public class ArangoProperties {
 		this.protocol = protocol;
 	}
 
+	public Boolean getReturnOriginalEntities() {
+		return returnOriginalEntities;
+	}
+
+	public void setReturnOriginalEntities(Boolean returnOriginalEntities) {
+		this.returnOriginalEntities = returnOriginalEntities;
+	}
 }
