@@ -77,8 +77,8 @@ public class RelationsRunner implements CommandLineRunner {
 
         Character nedStark = characterRepo.findByNameAndSurname("Ned", "Stark").get();
         System.out.println(String.format("## These are the children of %s:", nedStark));
-        nedStark.getChildren().forEach(System.out::println);
-        assertThat(nedStark.getChildren()).isNotEmpty();
+        nedStark.children().forEach(System.out::println);
+        assertThat(nedStark.children()).isNotEmpty();
 
         System.out.println("## These are the parents of 'Sansa'");
         Iterable<Character> parentsOfSansa = characterRepo.findByChildrenName("Sansa");

@@ -17,127 +17,36 @@
  *
  * Copyright holder is ArangoDB GmbH, Cologne, Germany
  */
-
 package com.arangodb.spring.demo.entity;
-
 import com.arangodb.springframework.annotation.ArangoId;
 import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.PersistentIndex;
 import com.arangodb.springframework.annotation.Relations;
 import org.springframework.data.annotation.Id;
-
 import java.util.Collection;
-import java.util.Objects;
-
 /**
  * @author Mark Vollmary
  */
 @Document("characters")
 @PersistentIndex(fields = {"surname"})
-public class Character {
-
-    @Id // db document field: _key
-    private String id;
-
-    @ArangoId // db document field: _id
-    private String arangoId;
-    private String name;
-    private String surname;
-    private boolean alive;
-    private Integer age;
-    @Relations(edges = ChildOf.class, lazy = true)
-    private Collection<Character> children;
-
-    public Character() {
-        super();
-    }
-
+public record Character(
+        @Id String id,
+        @ArangoId String arangoId,
+        String name,
+        String surname,
+        boolean alive,
+        Integer age,
+        @Relations(edges = ChildOf.class, lazy = true) Collection<Character> children
+) {
     public Character(final String name, final String surname, final boolean alive) {
-        super();
-        this.name = name;
-        this.surname = surname;
-        this.alive = alive;
+        this(null, null, name, surname, alive, null, null);
     }
 
     public Character(final String name, final String surname, final boolean alive, final Integer age) {
-        super();
-        this.name = name;
-        this.surname = surname;
-        this.alive = alive;
-        this.age = age;
+        this(null, null, name, surname, alive, age, null);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(final String id) {
-        this.id = id;
-    }
-
-    public String getArangoId() {
-        return arangoId;
-    }
-
-    public void setArangoId(final String arangoId) {
-        this.arangoId = arangoId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(final String surname) {
-        this.surname = surname;
-    }
-
-    public boolean isAlive() {
-        return alive;
-    }
-
-    public void setAlive(final boolean alive) {
-        this.alive = alive;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(final Integer age) {
-        this.age = age;
-    }
-
-    public Collection<Character> getChildren() {
-        return children;
-    }
-
-    public void setChildren(final Collection<Character> children) {
-        this.children = children;
-    }
-
-    @Override
-    public String toString() {
-        return "Character [id=" + id + ", name=" + name + ", surname=" + surname + ", alive=" + alive + ", age=" + age + "]";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Character character = (Character) o;
-        return alive == character.alive && Objects.equals(id, character.id) && Objects.equals(arangoId, character.arangoId) && Objects.equals(name, character.name) && Objects.equals(surname, character.surname) && Objects.equals(age, character.age) && Objects.equals(children, character.children);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, arangoId, name, surname, alive, age, children);
+    public Character withAlive(final boolean alive) {
+        return new Character(this.id, this.arangoId, this.name, this.surname, alive, this.age, this.children);
     }
 }

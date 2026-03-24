@@ -58,7 +58,7 @@ public class DerivedQueryRunner implements CommandLineRunner {
         top2.forEach(System.out::println);
         assertThat(top2)
                 .hasSize(2)
-                .isSortedAccordingTo(Comparator.comparingInt(Character::getAge).reversed());
+                .isSortedAccordingTo(Comparator.comparingInt(Character::age).reversed());
 
         System.out.println(
                 "## Find all characters which name is 'Bran' or 'Sansa' and it's surname ends with 'ark' and are between 10 and 16 years old");
@@ -66,17 +66,17 @@ public class DerivedQueryRunner implements CommandLineRunner {
                 10, 16, new String[]{"Bran", "Sansa"});
         youngStarks.forEach(System.out::println);
         assertThat(youngStarks)
-                .anyMatch(it -> it.getName().equals("Bran"))
-                .anyMatch(it -> it.getName().equals("Sansa"))
-                .allMatch(it -> it.getSurname().endsWith("ark"))
-                .allSatisfy(it -> assertThat(it.getAge()).isBetween(10, 16));
+                .anyMatch(it -> it.name().equals("Bran"))
+                .anyMatch(it -> it.name().equals("Sansa"))
+                .allMatch(it -> it.surname().endsWith("ark"))
+                .allSatisfy(it -> assertThat(it.age()).isBetween(10, 16));
 
         System.out.println("## Find a single character by name & surname");
         Optional<Character> tyrion = repository.findByNameAndSurname("Tyrion", "Lannister");
         tyrion.ifPresent(c -> System.out.println(String.format("Found %s", c)));
         assertThat(tyrion).isPresent();
-        assertThat(tyrion.get().getName()).isEqualTo("Tyrion");
-        assertThat(tyrion.get().getSurname()).isEqualTo("Lannister");
+        assertThat(tyrion.get().name()).isEqualTo("Tyrion");
+        assertThat(tyrion.get().surname()).isEqualTo("Lannister");
 
         System.out.println("## Count how many characters are still alive");
         Integer alive = repository.countByAliveTrue();
@@ -90,8 +90,8 @@ public class DerivedQueryRunner implements CommandLineRunner {
         assertThat(all)
                 .isNotEmpty()
                 .allSatisfy(it -> {
-                    assertThat(it.getSurname()).isEqualTo("Stark");
-                    assertThat(it.isAlive()).isTrue();
+                    assertThat(it.surname()).isEqualTo("Stark");
+                    assertThat(it.alive()).isTrue();
                 });
     }
 }

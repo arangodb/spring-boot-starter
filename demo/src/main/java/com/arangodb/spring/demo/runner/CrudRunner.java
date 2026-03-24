@@ -17,7 +17,6 @@
  *
  * Copyright holder is ArangoDB GmbH, Cologne, Germany
  */
-
 package com.arangodb.spring.demo.runner;
 
 import com.arangodb.spring.demo.entity.Character;
@@ -85,23 +84,21 @@ public class CrudRunner implements CommandLineRunner {
 
         // save a single entity in the database
         // there is no need of creating the collection first. This happen automatically
-        final Character nedStark = new Character("Ned", "Stark", true, 41);
-        repository.save(nedStark);
+        Character nedStark = repository.save(new Character("Ned", "Stark", true, 41));
 
-        // the generated id from the database is set in the original entity
-        System.out.println(String.format("Ned Stark saved in the database with id: '%s'", nedStark.getId()));
-        assertThat(nedStark.getId()).isNotNull();
+        // the generated id from the database is set in the returned entity
+        System.out.println(String.format("Ned Stark saved in the database with id: '%s'", nedStark.id()));
+        assertThat(nedStark.id()).isNotNull();
 
         // lets take a look whether we can find Ned Stark in the database
-        final Optional<Character> foundNed = repository.findById(nedStark.getId());
+        final Optional<Character> foundNed = repository.findById(nedStark.id());
         System.out.println(String.format("Found %s", foundNed.get()));
         assertThat(foundNed).isPresent();
 
-        nedStark.setAlive(false);
-        repository.save(nedStark);
-        final Optional<Character> deadNed = repository.findById(nedStark.getId());
-        System.out.println(String.format("The 'alive' flag of the persisted Ned Stark is now '%s'", deadNed.get().isAlive()));
-        assertThat(deadNed.get().isAlive()).isFalse();
+        nedStark = repository.save(nedStark.withAlive(false));
+        final Optional<Character> deadNed = repository.findById(nedStark.id());
+        System.out.println(String.format("The 'alive' flag of the persisted Ned Stark is now '%s'", deadNed.get().alive()));
+        assertThat(deadNed.get().alive()).isFalse();
 
         Collection<Character> createCharacters = createCharacters();
         System.out.println(String.format("Save %s additional characters", createCharacters.size()));
@@ -119,8 +116,7 @@ public class CrudRunner implements CommandLineRunner {
         List<Character> allSortedList = StreamSupport.stream(allSorted.spliterator(), false).toList();
         assertThat(allSortedList)
                 .hasSize((int) count)
-                .isSortedAccordingTo(Comparator.comparing(Character::getName));
-
+                .isSortedAccordingTo(Comparator.comparing(Character::name));
         System.out.println("## Return the first 5 characters sorted by name");
         Page<Character> first5Sorted = repository.findAll(PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "name")));
         first5Sorted.forEach(System.out::println);
@@ -128,5 +124,4 @@ public class CrudRunner implements CommandLineRunner {
                 .hasSize(5)
                 .containsExactlyElementsOf(allSortedList.subList(0, 5));
     }
-
 }

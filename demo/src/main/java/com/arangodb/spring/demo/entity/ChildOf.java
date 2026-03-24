@@ -17,76 +17,21 @@
  *
  * Copyright holder is ArangoDB GmbH, Cologne, Germany
  */
-
 package com.arangodb.spring.demo.entity;
-
 import com.arangodb.springframework.annotation.Edge;
 import com.arangodb.springframework.annotation.From;
 import com.arangodb.springframework.annotation.To;
 import org.springframework.data.annotation.Id;
-
-import java.util.Objects;
-
 /**
  * @author Mark Vollmary
  */
 @Edge
-public class ChildOf {
-
-    @Id
-    private String id;
-
-    @From
-    private Character child;
-
-    @To
-    private Character parent;
-
+public record ChildOf(
+        @Id String id,
+        @From Character child,
+        @To Character parent
+) {
     public ChildOf(final Character child, final Character parent) {
-        super();
-        this.child = child;
-        this.parent = parent;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(final String id) {
-        this.id = id;
-    }
-
-    public Character getChild() {
-        return child;
-    }
-
-    public void setChild(final Character child) {
-        this.child = child;
-    }
-
-    public Character getParent() {
-        return parent;
-    }
-
-    public void setParent(final Character parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public String toString() {
-        return "ChildOf [id=" + id + ", child=" + child + ", parent=" + parent + "]";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChildOf childOf = (ChildOf) o;
-        return Objects.equals(id, childOf.id) && Objects.equals(child, childOf.child) && Objects.equals(parent, childOf.parent);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, child, parent);
+        this(null, child, parent);
     }
 }

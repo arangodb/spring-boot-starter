@@ -61,8 +61,8 @@ public class ByExampleRunner implements CommandLineRunner {
         allDeadStarks.forEach(System.out::println);
         assertThat(allDeadStarks)
                 .hasSize(3)
-                .noneMatch(Character::isAlive)
-                .allSatisfy(it -> assertThat(it.getSurname()).isEqualTo("Stark"));
+                .noneMatch(Character::alive)
+                .allSatisfy(it -> assertThat(it.surname()).isEqualTo("Stark"));
 
         System.out.println("## Find all Starks which are 30 years younger than Ned Stark");
         Iterable<Character> allYoungerStarks = repository.findAll(
@@ -74,8 +74,8 @@ public class ByExampleRunner implements CommandLineRunner {
         assertThat(allYoungerStarks)
                 .isNotEmpty()
                 .allSatisfy(it -> {
-                    assertThat(it.getSurname()).isEqualTo("Stark");
-                    assertThat(it.getAge()).isEqualTo(foundNedStark.get().getAge() - 30);
+                    assertThat(it.surname()).isEqualTo("Stark");
+                    assertThat(it.age()).isEqualTo(foundNedStark.get().age() - 30);
                 });
 
         System.out.println("## Find all character which surname ends with 'ark' (ignore case)");
@@ -85,7 +85,7 @@ public class ByExampleRunner implements CommandLineRunner {
         ark.forEach(System.out::println);
         assertThat(ark)
                 .isNotEmpty()
-                .allMatch(it -> it.getSurname().endsWith("ark"));
+                .allMatch(it -> it.surname().endsWith("ark"));
     }
 
 }

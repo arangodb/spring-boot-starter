@@ -53,8 +53,8 @@ public class AQLRunner implements CommandLineRunner {
         lannisters.forEach(System.out::println);
         assertThat(lannisters)
                 .isNotEmpty()
-                .allMatch(it -> it.getSurname().equals("Lannister"))
-                .isSortedAccordingTo(Comparator.comparing(Character::getAge, Comparator.nullsFirst(Comparator.naturalOrder())));
+                .allMatch(it -> it.surname().equals("Lannister"))
+                .isSortedAccordingTo(Comparator.comparing(Character::age, Comparator.nullsFirst(Comparator.naturalOrder())));
 
         System.out.println("## Find all characters with surname 'Lannister' which are older than 35");
         Map<String, Object> bindvars = new HashMap<>();
@@ -67,16 +67,16 @@ public class AQLRunner implements CommandLineRunner {
         assertThat(oldLannisters.getCount()).isEqualTo(2);
         assertThat(repository.getWithSurnameOlderThan(35, bindvars).asListRemaining())
                 .isNotEmpty()
-                .allMatch(it -> it.getSurname().equals("Lannister"))
-                .allMatch(it -> it.getAge() > 35);
+                .allMatch(it -> it.surname().equals("Lannister"))
+                .allMatch(it -> it.age() > 35);
 
         System.out.println("## Find all children and grantchildren of 'Tywin Lannister' (sort by age descending)");
         List<Character> children = repository.findByNameAndSurname("Tywin", "Lannister").map(tywin ->
-                repository.getAllChildrenAndGrandchildren(tywin.getArangoId(), ChildOf.class)).get();
+                repository.getAllChildrenAndGrandchildren(tywin.arangoId(), ChildOf.class)).get();
         children.forEach(System.out::println);
         assertThat(children)
                 .isNotEmpty()
-                .isSortedAccordingTo(Comparator.comparing(Character::getAge).reversed());
+                .isSortedAccordingTo(Comparator.comparing(Character::age).reversed());
     }
 
 }
