@@ -116,6 +116,9 @@ arangodb.spring.data.database=spring-demo
 arangodb.spring.data.user=root
 arangodb.spring.data.password=test
 arangodb.spring.data.hosts=localhost:8529
+
+# needed to use immutable entities
+arangodb.spring.data.returnOriginalEntities=false
 ```
 
 ## Data modeling
