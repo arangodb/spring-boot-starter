@@ -26,7 +26,7 @@ Create a Maven `pom.xml`:
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>x.y.z</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -49,7 +49,7 @@ Create a Maven `pom.xml`:
         <dependency>
             <groupId>com.arangodb</groupId>
             <artifactId>arangodb-spring-boot-starter</artifactId>
-            <version>4.0-1-SNAPSHOT</version>
+            <version>x.y.z</version>
         </dependency>
     </dependencies>
 
@@ -65,8 +65,9 @@ Create a Maven `pom.xml`:
 </project>
 ```
 
-Substitute the versions with the latest available versions that are compatible.
+Substitute `x.y.z` with the latest available versions that are compatible.
 See the [Supported versions](#supported-versions) for details.
+You may also adjust the Java version.
 
 ### Monitor the server health
 
@@ -117,9 +118,14 @@ arangodb.spring.data.user=root
 arangodb.spring.data.password=test
 arangodb.spring.data.hosts=localhost:8529
 
-# needed to use immutable entities
+# needed to use immutable entities (e.g. Java records)
 arangodb.spring.data.returnOriginalEntities=false
 ```
+
+The `returnOriginalEntities=false` setting is required to work with immutable
+entities such as Java records. With this option, save operations return a new
+entity instance with the database-generated identifier set, instead of mutating
+the original instance.
 
 ## Data modeling
 
@@ -134,6 +140,12 @@ Because many operations on documents require a document handle, it's recommended
 to add a field of type `String` annotated with `@Id` to every entity. The name
 doesn't matter. It's further recommended to **not set or change** the id by hand.
 
+The entity is defined as a Java record, which is immutable. The
+`@Id`-annotated component maps to the `_key` document field, and the
+`@ArangoId`-annotated component maps to the `_id` document field.
+A `withAlive()` helper is added to produce a modified copy when an update is
+needed, since records are immutable.
+
 ```java
 package com.arangodb.spring.demo.entity;
 
@@ -142,6 +154,7 @@ import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.PersistentIndex;
 import com.arangodb.springframework.annotation.Relations;
 import org.springframework.data.annotation.Id;
+
 import java.util.Collection;
 
 @Document("characters")
@@ -296,9 +309,12 @@ Found Character[id=346, arangoId=characters/346, name=Ned, surname=Stark, alive=
 ### Update an entity
 
 As everyone probably knows, Ned Stark died in the first season of Game of Thrones.
-So, you should to update his 'alive' flag. Thanks to the `id` field in the
-`Character` class, you can use the `save()` method of the repository to perform
+So, you should to update his 'alive' flag. Thanks to the `id` component in the
+`Character` record, you can use the `save()` method of the repository to perform
 an upsert with the variable `nedStark` in which `id` is already set.
+
+Because records are immutable, use the `withAlive()` helper to obtain a modified
+copy and reassign the result of `save()` to `nedStark`.
 
 Add the following lines of code to the end of our `run()` method in `CrudRunner`:
 
@@ -568,7 +584,7 @@ to be built. You can define conditions on entity properties and concatenate them
 with `And` and `Or`.
 
 You can find the complete list of part types for derived queries in the
-[reference documentation](spring-data-arangodb/reference-version-4/repositories/queries/derived-queries.md).
+[reference documentation](spring-data-arangodb/repositories/queries/derived-queries.md).
 
 ### Simple findBy
 
@@ -577,7 +593,7 @@ Start with an easy example and find characters based on their `surname`.
 The only thing you have to do is to add a method `findBySurname(String)` to your
 `CharacterRepository` with a return type which allows the method to return
 multiple instances of `Character`. For more information on which return types are
-possible, see the [reference documentation](spring-data-arangodb/reference-version-4/repositories/queries/_index.md#return-types).
+possible, see the [reference documentation](spring-data-arangodb/repositories/queries/_index.md#return-types).
 
 ```java
 public interface CharacterRepository extends ArangoRepository<Character, String> {
@@ -642,13 +658,13 @@ Character[id=255, arangoId=characters/255, name=Tywin, surname=Lannister, alive=
 
 Indexes allow fast access to documents, provided the indexed attribute(s) are
 used in a query. To make `findBySurname` queries faster, you can create an index
-on the `surname` field, adding the `@PersistentIndex` to the `Character` class:
+on the `surname` field, adding the `@PersistentIndex` to the `Character` record
+(this is already included in the record definition above):
 
 ```java
-
 @Document("characters")
 @PersistentIndex(fields = {"surname"})
-public class Character {
+public record Character(...) {
 ```
 
 Next time you run the demo, the related queries benefit from the index and
@@ -786,6 +802,9 @@ To demonstrate this, use the previously created `Character` entity.
 Add a `children` field of type `Collection<Character>` annotated with
 `@Relations(edges = ChildOf.class, lazy = true)`.
 
+The `children` component is already part of the `Character` record shown
+earlier:
+
 ```java
 @Document("characters")
 @PersistentIndex(fields = {"surname"})
@@ -805,11 +824,11 @@ public record Character(
 Then create an entity for the edge you stated in `@Relations`. Other than a
 normal entity annotated with `@Document`, this entity is annotated with
 `@Edge`. This allows Spring Data ArangoDB to create an edge collection in
-the database. Just like `Character`, `ChildOf` also gets a field for its
-`id`. To connect two `Character` entities, it also gets a field of type
-`Character` annotated with `@From` and a field of type `Character` annotated
-with `@To`. `ChildOf` is persisted in the database with the ids of these
-two characters.
+the database. Just like `Character`, `ChildOf` also gets a component for its
+`id`. To connect two `Character` entities, it also gets a component of type
+`Character` annotated with `@From` and a component of type `Character`
+annotated with `@To`. `ChildOf` is persisted in the database with the ids of
+these two characters.
 
 ```java
 package com.arangodb.spring.demo.entity;
@@ -993,10 +1012,10 @@ Character[id=2999, arangoId=characters/2999, name=Cersei, surname=Lannister, ali
 You can have repository methods with self-written AQL queries.
 
 When it comes to more complex use cases where a derived method would get way too
-long and become unreadable, queries using the [ArangoDB Query Language (AQL)](../../aql/_index.md)
+long and become unreadable, queries using the [ArangoDB Query Language (AQL)](../../../arangodb/3.12/aql/_index.md)
 can be supplied with the `@Query` annotation on methods in your repositories.
 
-AQL supports the usage of [bind parameters](../../aql/fundamentals/bind-parameters.md),
+AQL supports the usage of [bind parameters](../../../arangodb/3.12/aql/fundamentals/bind-parameters.md),
 thus allowing to separate the query text from literal values used in the query.
 There are three ways of passing bind parameters to the query in the `@Query`
 annotation that are described below.
@@ -1166,7 +1185,7 @@ Character[id=9014, arangoId=characters/9014, name=Cersei, surname=Lannister, ali
 
 ### Graph traversal
 
-To finish the query method topic, add a [graph traversal](../../aql/graphs/traversals.md)
+To finish the query method topic, add a [graph traversal](../../arangodb/3.12/aql/graph-queries/traversals.md)
 written in AQL to this demo where the `ChildOf` edges are involved.
 
 The following query searches for every `Character` connected (through `ChildOf`)
@@ -1229,7 +1248,7 @@ affected fields.
 Spring Data ArangoDB offers two ways of defining an index. With the
 `@<IndexType>Indexed` annotations, indexes for single fields can be defined.
 If the index should include multiple fields, the `@<IndexType>Index` annotations
-can be used on the type instead. See the [reference documentation](spring-data-arangodb/reference-version-4/mapping/indexes.md)
+can be used on the type instead. See the [reference documentation](spring-data-arangodb/mapping/indexes.md)
 for more information.
 
 Create a new `Location` class:
@@ -1241,8 +1260,6 @@ import com.arangodb.springframework.annotation.Document;
 import com.arangodb.springframework.annotation.GeoIndexed;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.geo.Point;
-
-import java.util.Arrays;
 
 @Document("locations")
 public record Location(
